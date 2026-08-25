@@ -27,8 +27,8 @@ generic Helm chart.
 - [transports.md](transports.md) - streamable HTTP, the HTTP tool API, health.
 - [conformance.md](conformance.md) - MCP 2026-07-28.
 - [request-bounds.md](request-bounds.md) - deadlines and connection guards.
-- [undeclared-arguments.md](undeclared-arguments.md) - an argument a tool does
-  not declare is refused, never dropped.
+- [refusals.md](refusals.md) - an undeclared argument is refused, and a
+  credential in a base-url path is never emitted.
 - [conformance.md](conformance.md) - `/admin` describe and reload.
 - [logs.md](logs.md) - structured logs and redaction.
 - [telemetry.md](telemetry.md) - opt-in OpenTelemetry.

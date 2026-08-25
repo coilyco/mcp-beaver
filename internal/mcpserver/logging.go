@@ -57,13 +57,12 @@ var urlQuery = regexp.MustCompile(`(https?://[^\s?]*)\?[^\s]*`)
 // boundary. Every URL loses its query string and keeps its scheme, host and
 // path.
 //
-// That line is not arbitrary. Server-side `pin` writes query parameters and
-// only query parameters, and `auth` writes a header, so dropping the query
-// removes exactly the two surfaces a credential can reach. The path is the
-// grant's declared template plus caller-supplied scoping the `restrict` gate
-// already bounds, and without it a 404 is unattributable.
+// Query and header were once the only two surfaces a credential could reach.
+// A base-url carrying a token in its path is the third, so the registered
+// prefix goes too. See docs/logs.md.
 func redactReason(reason string) string {
 	reason = urlQuery.ReplaceAllString(reason, "$1?<redacted>")
+	reason = redactSecretPaths(reason)
 	reason = strings.TrimSpace(reason)
 	if len(reason) > maxLoggedReason {
 		return reason[:maxLoggedReason] + "..."

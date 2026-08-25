@@ -23,12 +23,18 @@ fleet-wide while four of those servers were failing every call.
 ## Redaction
 
 A reason keeps each URL's scheme, host, and path and drops its query, marked
-`?<redacted>` rather than silently removed. That line is not arbitrary: `pin`
-writes query parameters and only query parameters, and `auth` writes a header,
-so dropping the query removes exactly the surfaces a credential reaches while a
-404 stays attributable.
+`?<redacted>` rather than silently removed. `pin` writes query parameters and
+only query parameters and `auth` writes a header, so dropping the query removes
+those two surfaces while a 404 stays attributable.
 
-Reasons are bounded at 512 characters, because an upstream refusing with an
-HTML error page would otherwise put the page in the log line.
+Reasons are bounded at 512 characters, so an upstream refusing with an HTML
+error page cannot put the page in the log line.
+
+Telegram's base is `https://api.telegram.org/bot<token>`, so a base-url path is
+a third surface a credential reaches (`infrastructure#708`). The runtime resolves
+that URL once at startup, best effort, and masks its path in the log line **and**
+in the error handed to the caller, which was its unredacted twin. The whole
+prefix goes: a token-shaped pattern would hold only until an upstream formatted
+its credential differently, then fail silently.
 
 See also: [telemetry.md](telemetry.md).

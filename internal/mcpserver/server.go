@@ -174,6 +174,8 @@ func New(name, specPath string, src []byte) (*Server, error) {
 	if err != nil {
 		return nil, fmt.Errorf("initialize telemetry: %w", err)
 	}
+	// Before the first handler can fail and report the URL it failed on.
+	registerBaseURLPath(context.Background(), rt)
 
 	s := &Server{
 		name:           name,

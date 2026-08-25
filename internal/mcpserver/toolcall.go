@@ -2,6 +2,7 @@ package mcpserver
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
@@ -90,8 +91,13 @@ func sqlResultTruncated(result any) bool {
 	return cut
 }
 
+// toolError redacts before the caller sees it. The log line was redacted and
+// the caller's copy of the same string was not. See docs/refusals.md.
 func toolError(err error) *mcp.CallToolResult {
 	out := &mcp.CallToolResult{}
+	if redacted := redactSecretPaths(err.Error()); redacted != err.Error() {
+		err = errors.New(redacted)
+	}
 	out.SetError(err)
 	return out
 }
