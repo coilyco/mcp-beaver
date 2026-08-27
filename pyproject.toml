@@ -4,7 +4,7 @@ org = "coilyco-flight-deck"
 # The README carries the product banner, and the two lines it takes put a file
 # that already sat at 159 over the 160-line trifecta cap.
 [tool.agentic-os.documentation-layout]
-band = "small"
+band = "large"
 readme_max_lines = 172
 
 # The managed markers are stamped inside the pre-commit YAML and cannot form a
