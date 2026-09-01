@@ -1,0 +1,19 @@
+// ai.alphacreek/alphacreek-mcp - generated from the MCP registry and a live tools/list.
+// 5 tools: 5 declared read-only, 0 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.alphacreek/alphacreek-mcp" {
+    url "https://mcp.alphacreek.ai/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=5 silent=0
+    instructions {
+        text "Access SEC filings efficiently (10-K, 10-Q, etc), save time and tokens, and get cited answers."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can get_latest_filing
+    can list_filings
+    can get_filing_toc
+    can read_node_content
+    can search_sec_event_filings
+}

@@ -1,0 +1,32 @@
+// ac.inference.sh/mcp - generated from the MCP registry and a live tools/list.
+// 25 tools: 16 declared read-only, 9 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ac.inference.sh/mcp" {
+    url "https://api.inference.sh/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=25 silent=0
+    instructions {
+        text "run any ai model. compose agents, stack knowledge, connect tools. one api, pay per run."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can app_get
+    can app_list
+    can knowledge_get
+    can knowledge_list
+    can knowledge_search
+    can mcp_get
+    can mcp_list
+    can mcp_search
+    can mcp_tools
+    can skill_files
+    can skill_search
+    can skill_use
+    can skill_view
+    can task_get
+    can task_list
+    can task_logs
+ // Not exposed: 9 declared mutating, 0 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

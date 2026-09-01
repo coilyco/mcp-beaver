@@ -1,0 +1,15 @@
+// ai.advisorsai/store-readiness - generated from the MCP registry and a live tools/list.
+// 1 tools: 1 declared read-only, 0 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.advisorsai/store-readiness" {
+    url "https://advisorsai.ai/store-readiness-mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=1 silent=0
+    instructions {
+        text "Ten machine-readable signals on one public page: the top miss if any, and a receipt we re-verify."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can advisors_store_readiness_check
+}

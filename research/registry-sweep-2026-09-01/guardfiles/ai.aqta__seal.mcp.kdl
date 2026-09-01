@@ -1,0 +1,24 @@
+// ai.aqta/seal - generated from the MCP registry and a live tools/list.
+// 10 tools: 10 declared read-only, 0 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.aqta/seal" {
+    url "https://app.aqta.ai/api/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=10 silent=0
+    instructions {
+        text "Verify Seal AI decision receipts: signed evidence anyone can check, no account needed."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can verify_receipt
+    can decode_receipt
+    can get_public_key
+    can get_sample_receipt
+    can get_review_pack
+    can verify_evidence_pack
+    can explain_attestation_format
+    can list_my_receipts
+    can get_transparency_proof
+    can workspace_summary
+}

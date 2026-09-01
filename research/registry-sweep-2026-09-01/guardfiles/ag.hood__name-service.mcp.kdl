@@ -1,0 +1,15 @@
+// ag.hood/name-service - generated from the MCP registry and a live tools/list.
+// 5 tools: 0 declared read-only, 0 declared mutating,
+// 5 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ag.hood/name-service" {
+    url "https://www.hood.ag/api/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage undeclared annotated=0 silent=5
+    instructions {
+        text "Resolve .hood names on Robinhood Chain — forward/reverse, text records, availability & pricing."
+    }
+ // Not exposed: 0 declared mutating, 5 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

@@ -1,0 +1,18 @@
+// ai.alpic.alpix/Alpix - generated from the MCP registry and a live tools/list.
+// 3 tools: 2 declared read-only, 1 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.alpic.alpix/Alpix" {
+    url "https://alpix.alpic.ai"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=3 silent=0
+    instructions {
+        text "A pixel wars MCP server: ask your agent to collaboratively draw pixels in a huge square"
+    }
+    // readOnlyHint: true, declared by the upstream
+    can canvas
+    can get-leaderboard
+ // Not exposed: 1 declared mutating, 0 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

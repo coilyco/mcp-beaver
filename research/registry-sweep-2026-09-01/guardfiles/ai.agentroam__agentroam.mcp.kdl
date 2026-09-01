@@ -1,0 +1,24 @@
+// ai.agentroam/agentroam - generated from the MCP registry and a live tools/list.
+// 11 tools: 8 declared read-only, 3 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.agentroam/agentroam" {
+    url "https://agentroam.ai/api/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=11 silent=0
+    instructions {
+        text "Buy travel eSIMs, gift cards and mobile top-ups with crypto — user confirms before any order."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can search_products
+    can get_price
+    can list_esim_plans
+    can get_order_status
+    can list_brands
+    can list_products
+    can get_currencies
+    can get_payment_methods
+ // Not exposed: 3 declared mutating, 0 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

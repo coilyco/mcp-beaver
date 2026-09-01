@@ -1,0 +1,21 @@
+// ai.adoraads/beauty - generated from the MCP registry and a live tools/list.
+// 6 tools: 5 declared read-only, 1 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.adoraads/beauty" {
+    url "https://mcp.adoraads.ai/beauty"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=6 silent=0
+    instructions {
+        text "AI-native beauty ads, sponsored product discovery, and brand recommendations."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can sponsored_search
+    can brand_spotlight
+    can routine_builder
+    can skin_match
+    can get_shopper_prefs
+ // Not exposed: 1 declared mutating, 0 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

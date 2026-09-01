@@ -1,0 +1,34 @@
+// ai.analyticslegends/sap-analytics - generated from the MCP registry and a live tools/list.
+// 20 tools: 20 declared read-only, 0 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.analyticslegends/sap-analytics" {
+    url "https://analyticslegends.ai/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=20 silent=0
+    instructions {
+        text "AI agent for SAP analytics: firms, day rates, contract radar, news, concepts, studies"
+    }
+    // readOnlyHint: true, declared by the upstream
+    can search_firms
+    can count_firms_by
+    can get_firm
+    can list_firm_kinds
+    can list_freelance_platforms
+    can find_opportunities
+    can search_news
+    can search_concepts
+    can get_concept
+    can list_studies
+    can get_day_rate_benchmark
+    can list_sap_modules
+    can find_academy_modules
+    can query_knowledge_graph
+    can get_concept_card
+    can get_study
+    can get_academy_module
+    can find_sap_clients
+    can get_sap_client_profile
+    can get_firm_intel
+}

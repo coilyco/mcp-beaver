@@ -1,0 +1,15 @@
+// agency.goji/goji - generated from the MCP registry and a live tools/list.
+// 9 tools: 0 declared read-only, 1 declared mutating,
+// 8 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "agency.goji/goji" {
+    url "https://mcp.goji.agency/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage partial annotated=1 silent=8
+    instructions {
+        text "Answers on AEO, SEO, web and brand from GOJI's published material. Melbourne, Australia."
+    }
+ // Not exposed: 1 declared mutating, 8 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

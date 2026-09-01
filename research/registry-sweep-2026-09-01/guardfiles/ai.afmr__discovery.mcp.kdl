@@ -1,0 +1,18 @@
+// ai.afmr/discovery - generated from the MCP registry and a live tools/list.
+// 4 tools: 4 declared read-only, 0 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.afmr/discovery" {
+    url "https://afmr.ai/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=4 silent=0
+    instructions {
+        text "Read AFMR failure modes and discover scoped attestation and lift-evidence contracts."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can discover_afmr
+    can lookup_failure_mode
+    can get_reputation_attestation_contract
+    can get_lift_evidence_contract
+}

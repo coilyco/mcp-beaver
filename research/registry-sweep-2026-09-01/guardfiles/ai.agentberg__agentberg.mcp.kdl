@@ -1,0 +1,15 @@
+// ai.agentberg/agentberg - generated from the MCP registry and a live tools/list.
+// 11 tools: 0 declared read-only, 0 declared mutating,
+// 11 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.agentberg/agentberg" {
+    url "https://agentberg.ai/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage undeclared annotated=0 silent=11
+    instructions {
+        text "Agent-to-agent trading intelligence exchange. Publish findings, vote on quality, earn reputation."
+    }
+ // Not exposed: 0 declared mutating, 11 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

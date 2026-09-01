@@ -1,0 +1,15 @@
+// ai.arclan/registry - generated from the MCP registry and a live tools/list.
+// 4 tools: 0 declared read-only, 0 declared mutating,
+// 4 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.arclan/registry" {
+    url "https://arclan.ai/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage undeclared annotated=0 silent=4
+    instructions {
+        text "MCP server registry — validated by live handshake, scored on reliability, monitored continuously."
+    }
+ // Not exposed: 0 declared mutating, 4 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

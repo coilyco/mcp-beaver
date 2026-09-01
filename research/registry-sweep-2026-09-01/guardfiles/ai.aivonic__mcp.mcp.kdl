@@ -1,0 +1,15 @@
+// ai.aivonic/mcp - generated from the MCP registry and a live tools/list.
+// 5 tools: 0 declared read-only, 0 declared mutating,
+// 5 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.aivonic/mcp" {
+    url "https://mcp.aivonic.ai"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage undeclared annotated=0 silent=5
+    instructions {
+        text "Do business with Aivonic: pricing, products, check availability, book a demo, request a quote."
+    }
+ // Not exposed: 0 declared mutating, 5 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

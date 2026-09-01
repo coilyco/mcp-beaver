@@ -1,0 +1,18 @@
+// ai.agentrapay/agentra - generated from the MCP registry and a live tools/list.
+// 6 tools: 2 declared read-only, 4 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.agentrapay/agentra" {
+    url "https://api.agentrapay.ai/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=6 silent=0
+    instructions {
+        text "Identity oracle and trust layer for autonomous AI agents. Bidirectional KYA and trust scoring."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can agentra_check_reputation
+    can agentra_get_wallet
+ // Not exposed: 4 declared mutating, 0 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}

@@ -1,0 +1,16 @@
+// ai.agentlookups/greenlight - generated from the MCP registry and a live tools/list.
+// 2 tools: 2 declared read-only, 0 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.agentlookups/greenlight" {
+    url "https://solar.agentlookups.ai/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=2 silent=0
+    instructions {
+        text "US plug-in solar (balcony solar) law registry with a daily UL 3700 certification watch."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can solar_states
+    can solar_law
+}

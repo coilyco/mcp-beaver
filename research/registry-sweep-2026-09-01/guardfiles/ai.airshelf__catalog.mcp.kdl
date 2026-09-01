@@ -1,0 +1,22 @@
+// ai.airshelf/catalog - generated from the MCP registry and a live tools/list.
+// 8 tools: 6 declared read-only, 2 declared mutating,
+// 0 undeclared. Only declared read-only tools are exposed.
+wrap mcp upstream "ai.airshelf/catalog" {
+    url "https://mcp.airshelf.ai/mcp"
+    transport streamable-http
+    // Machine-readable, so a consumer can filter on it rather than
+    // parse the comments above.
+    annotation-coverage declared annotated=8 silent=0
+    instructions {
+        text "Cross-vendor B2B catalog for AI agents: search, compare, find equivalents, request a quote."
+    }
+    // readOnlyHint: true, declared by the upstream
+    can search_catalog
+    can find_products
+    can get_product
+    can compare_products
+    can explain_product
+    can list_merchants
+ // Not exposed: 2 declared mutating, 0 undeclared.
+    // Names deliberately omitted, see annotation-coverage above.
+}
