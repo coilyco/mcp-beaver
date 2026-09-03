@@ -23,6 +23,9 @@ generic Helm chart.
   mints rather than reads.
 - [ssm.md](ssm.md) - the exact-parameter AWS reader.
 - [s3.md](s3.md) - the asset publisher, and the one write-capable mode.
+- [teable-admin.md](teable-admin.md) - a separate binary for the three
+  field-schema verbs the guard withholds, with read-back verification and a
+  value-snapshot recovery path for `convert-field`.
 
 ## Guardfile surface
 
