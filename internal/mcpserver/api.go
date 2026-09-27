@@ -64,7 +64,7 @@ func (s *Server) serveAPITool(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := handler(directToolContext(r.Context()), &mcp.CallToolRequest{
+	result, err := handler(withInboundHeaders(directToolContext(r.Context()), r.Header), &mcp.CallToolRequest{
 		Params: &mcp.CallToolParamsRaw{Name: name, Arguments: raw},
 	})
 	if err != nil {

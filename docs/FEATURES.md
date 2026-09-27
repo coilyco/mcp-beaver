@@ -32,7 +32,7 @@ generic Helm chart.
 - [apps.md](apps.md) - MCP App widgets: a `ui://` resource plus the
   `_meta.ui.resourceUri` link a host renders from.
 - [guardfile-controls.md](guardfile-controls.md) - pins, rate limit, cache,
-  withheld verbs, confirmations.
+  forwarded headers, withheld verbs, confirmations.
 - [extraction.md](extraction.md) - reading a PDF or feed an upstream returns.
 - [upstream-pins.md](upstream-pins.md) - server-side argument pinning.
 - [upstream-controls.md](upstream-controls.md) - the sibling nodes a proxy

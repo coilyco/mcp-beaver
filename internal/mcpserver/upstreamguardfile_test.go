@@ -152,6 +152,7 @@ func TestParseUpstreamSpecFailsClosed(t *testing.T) {
 		"auth missing value":            body(`auth header-token { header "Authorization" }`),
 		"auth brace in prefix":          body(`auth header-token { header "A"; prefix "{"; value env "T" }`),
 		"unprojected sibling":           body(`can "a"`) + "\ncache \"a\" ttl=\"1m\"",
+		"unprojected forward-header":    body(`can "a"`) + "\nforward-header \"x-agent-origin\"",
 		"confirm naming no minted tool": body(`can "a"`) + "\nconfirm \"b\" message=\"sure?\"",
 		"server-info shadowing a grant": body(`can "a"`) + "\nserver-info name=\"a\"",
 		"pin naming no allowlisted tool": body(`can "a"`) +

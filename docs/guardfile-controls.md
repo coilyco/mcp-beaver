@@ -25,6 +25,14 @@ a window. Off by default. Keyed on the tool plus canonicalised arguments, and ou
 rate limiter so a hit spends no slot. Failed calls are never stored, and caching a
 destructive or `confirm`-gated grant is a build error.
 
+**Forwarded headers.** `forward-header "x-agent-origin"` copies that header from the
+caller's MCP or HTTP API request onto every upstream request the call makes, so the
+upstream learns who is behind this server and not only the server itself. A wrap-level
+`header` or `auth header-token` naming the same header is the fallback for a caller that
+sent none. `required=#true` refuses a call missing it before any other control runs, and
+across `inherit` it only tightens. Credentials, cookies, and headers the runtime or the
+MCP session owns are refused at build. Off by default.
+
 **Reject empty.** `reject-empty "<tool>"` makes an empty result a tool error. `reject-
 empty-argument "<tool>" field="<name>"` refuses a write carrying a blank field. Both off
 by default. Empty is no content, whitespace, `null`, `""`, `[]`, or `{}` past the

@@ -93,6 +93,13 @@ func New(name, specPath string, src []byte) (*Server, error) {
 	}
 	cfg.Providers = providers.providers
 	rt := opcore.NewRuntime(cfg)
+	forwardHeaders, err := parseForwardHeaders(sources)
+	if err != nil {
+		return nil, err
+	}
+	if len(forwardHeaders) > 0 {
+		rt.Client = withForwardTransport(rt.Client)
+	}
 
 	tools, err := localTools(descs)
 	if err != nil {
@@ -284,6 +291,11 @@ func New(name, specPath string, src []byte) (*Server, error) {
 		// asks no human to confirm what was going to be refused anyway.
 		if fields, declared := emptyArgs[spec.Name]; declared {
 			handler = withRejectEmptyArguments(spec.Name, fields, handler)
+		}
+		// Past even that: a call missing a required forwarded header is
+		// refused before any other control reads it.
+		if len(forwardHeaders) > 0 {
+			handler = withForwardHeaders(forwardHeaders, handler)
 		}
 		s.registerTool(spec, handler)
 	}
