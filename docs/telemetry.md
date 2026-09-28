@@ -36,3 +36,17 @@ Structured logs are the one narrow exception, and only for a refusal reason:
 they keep the upstream host and path so a failure is attributable, and drop the
 query, which is where `pin` and caller input live. Startup logs name the spec
 path, which the operator supplied.
+
+## Crashes to Sentry
+
+With `SENTRY_DSN` set, the serving verbs (`serve`, `serve-ssm`, `serve-s3`, `serve-upstream`) also
+send **crashes, and only crashes**, to Sentry, tagged `server.name` so every deployed guardfile stays
+separable in one project. A crash is a failed start, a serve loop that returns an error, or an uncaught
+panic in `main` or in a request handler. A handler panic is reported and re-raised, so net/http still
+logs it and drops the connection as before, and its own `http.ErrAbortHandler` is not a crash.
+
+Handled errors, meaning refusals, tool errors, and upstream failures, stay in SigNoz to keep inside the
+free quota. Each process sends at most `CrashEventsPerMinute` (20) a minute, and a bad DSN leaves
+reporting off with a warning that names only its type. **A panic on any other goroutine still kills the
+process unreported**, because Go lets only that goroutine recover it. The CLI verbs (`lint`, `pull`,
+`directory`, `flatten`) never report.

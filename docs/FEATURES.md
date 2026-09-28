@@ -47,7 +47,7 @@ generic Helm chart.
   credential in a base-url path is never emitted.
 - [conformance.md](conformance.md) - `/admin` describe and reload.
 - [logs.md](logs.md) - structured logs and redaction.
-- [telemetry.md](telemetry.md) - opt-in OpenTelemetry.
+- [telemetry.md](telemetry.md) - opt-in OpenTelemetry, and crashes to Sentry.
 
 **Distribution.** - [release.md](release.md) is the installable binary and its
   Homebrew formula. [image.md](image.md), [ci.md](ci.md), [chart.md](chart.md),

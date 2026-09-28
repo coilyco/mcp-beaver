@@ -624,6 +624,13 @@ func runServeS3(ctx context.Context, argv []string) error {
 }
 
 func withTelemetry(ctx context.Context, serviceName string, run func() error) (err error) {
+	if _, crashErr := internaltelemetry.StartCrashReporting(serviceName); crashErr != nil {
+		// The type only: a DSN parse error can carry the DSN.
+		mcpserver.Log().Warn("crash reporting disabled", "error_type", fmt.Sprintf("%T", crashErr))
+	}
+	defer internaltelemetry.RecoverCrash()
+	// Every serving verb ends here, so an error returned from run is the process dying.
+	defer func() { internaltelemetry.ReportCrash(err) }()
 	runtime, err := internaltelemetry.Setup(ctx, serviceName)
 	if err != nil {
 		return err
@@ -655,7 +662,7 @@ func serveHTTP(ctx context.Context, addr string, handler http.Handler) error {
 	// aborts the outbound call rather than only the write.
 	server := &http.Server{
 		Addr:              addr,
-		Handler:           handler,
+		Handler:           internaltelemetry.RecoverHandler(handler),
 		ReadHeaderTimeout: readHeaderTimeout,
 		IdleTimeout:       idleTimeout,
 	}
