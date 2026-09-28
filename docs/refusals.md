@@ -35,4 +35,7 @@ let this through, and a guard is stricter than the thing it guards.
 A pinned parameter is absent from the tool schema, so supplying one is refused
 rather than silently overruled. Extra keys **nested inside** a declared property
 stay the body mapping's business, which is what lets a webhook post its whole
-payload at a tool that wants one field.
+payload at a tool that wants one field. A webhook whose extra keys sit at the top
+level, as an Alertmanager body does, needs `ignore-undeclared-arguments "<tool>"`
+(teable:coilyco/deploy#8419). It builds only on a grant whose body is a `map`, where no dropped
+key can have been a filter.

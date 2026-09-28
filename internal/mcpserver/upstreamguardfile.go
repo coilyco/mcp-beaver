@@ -228,9 +228,9 @@ func upstreamAuthHeaders(auth guardfile.Auth, providers ProviderSet) ([]Upstream
 // What is absent is what has no proxy meaning rather than what is unfinished:
 // `resource`, `prompt` and `app` are content a REST guardfile serves beside
 // its grants and a passthrough proxy mints none of, and `cache`, `extract`,
-// `reject-empty`, `reject-empty-argument` and `set` all shape a request or a
-// response opcore assembles from a grant, which a proxy forwards verbatim
-// instead. See docs/upstream-controls.md.
+// `reject-empty`, `reject-empty-argument`, `ignore-undeclared-arguments` and
+// `set` all shape a request or a response opcore assembles from a grant, which a
+// proxy forwards verbatim instead. See docs/upstream-controls.md.
 //
 // `description` is umbra's own, read by the parse above rather than here.
 var upstreamSiblings = map[string]bool{

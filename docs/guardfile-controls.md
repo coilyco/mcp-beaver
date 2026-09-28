@@ -38,6 +38,11 @@ empty-argument "<tool>" field="<name>"` refuses a write carrying a blank field. 
 by default. Empty is no content, whitespace, `null`, `""`, `[]`, or `{}` past the
 `coverage` envelope. **`false` and `0` are answers**.
 
+**Ignore undeclared arguments.** `ignore-undeclared-arguments "<tool>"` drops a top-level
+argument the tool does not declare instead of refusing it, for a webhook sender that posts
+its whole payload. Only a grant whose body is a `map` accepts it. Anywhere else a dropped
+key is a dropped filter, so naming one fails the build ([refusals.md](refusals.md)).
+
 ## Withheld verbs and confirmations
 
 `withhold "<tool-name>" { reason ...; alternative ... }` mints a discoverable stub for a

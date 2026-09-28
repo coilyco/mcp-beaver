@@ -184,12 +184,13 @@ func singleSource(src []byte, dir string) []guardSource {
 // projected tool name. Each is a control ON a tool, so it means nothing once
 // the tool is gone.
 var toolScopedSiblings = map[string]bool{
-	"confirm":               true,
-	"cache":                 true,
-	"reject-empty":          true,
-	"reject-empty-argument": true,
-	"pin":                   true,
-	"extract":               true,
+	"confirm":                     true,
+	"cache":                       true,
+	"reject-empty":                true,
+	"reject-empty-argument":       true,
+	"ignore-undeclared-arguments": true,
+	"pin":                         true,
+	"extract":                     true,
 }
 
 // inheritedToolControls names every tool an ANCESTOR states a control on. It

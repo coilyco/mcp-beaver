@@ -46,7 +46,7 @@ than rejecting - reads the same as it does beside `wrap`.
 Absence here is a statement rather than a backlog. `resource`, `prompt` and
 `app` are content a REST guardfile serves beside its grants, and a passthrough
 proxy mints none of it. `cache`, `extract`, `reject-empty`,
-`reject-empty-argument`, `forward-header` and `set` all shape a request or a
+`reject-empty-argument`, `ignore-undeclared-arguments`, `forward-header` and `set` all shape a request or a
 response opcore assembles from a grant. A proxy forwards the upstream's own contract verbatim
 instead, which is the property the drift check exists to hold. Stating one
 beside `mcp-upstream` fails closed, and the refusal names the set that works.

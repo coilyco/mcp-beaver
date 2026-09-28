@@ -201,6 +201,14 @@ func New(name, specPath string, src []byte) (*Server, error) {
 	if err := validateRejectEmptyArguments(emptyArgs, descs); err != nil {
 		return nil, err
 	}
+	ignoreUndeclared, err := parseIgnoreUndeclared(sources)
+	if err != nil {
+		return nil, err
+	}
+	vacated = append(vacated, dropVacantControls(ignoreUndeclared, inheritedControls, minted)...)
+	if err := validateIgnoreUndeclared(ignoreUndeclared, descs); err != nil {
+		return nil, err
+	}
 	queryPins, err := parseQueryPins(sources, providers)
 	if err != nil {
 		return nil, err
@@ -269,7 +277,8 @@ func New(name, specPath string, src []byte) (*Server, error) {
 		desc := d
 		spec := toolSpec(desc)
 		applyAppMeta(appMeta, spec)
-		handler := toolHandler(rt, desc, queryPins[spec.Name], extracts[spec.Name], providers)
+		_, dropUndeclared := ignoreUndeclared[spec.Name]
+		handler := toolHandler(rt, desc, queryPins[spec.Name], extracts[spec.Name], providers, dropUndeclared)
 		// Innermost, so it reads the upstream's own answer: an empty result
 		// becomes a tool error before anything downstream can cache it.
 		if _, declared := rejectEmpties[spec.Name]; declared {
@@ -842,7 +851,7 @@ func toolSpec(d opcore.Descriptor) *mcp.Tool {
 	}
 }
 
-func toolHandler(rt *opcore.Runtime, desc opcore.Descriptor, pins []queryPin, extract *extractSpec, providers ProviderSet) mcp.ToolHandler {
+func toolHandler(rt *opcore.Runtime, desc opcore.Descriptor, pins []queryPin, extract *extractSpec, providers ProviderSet, dropUndeclared bool) mcp.ToolHandler {
 	schema := desc.InputSchema()
 	return func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		var rawArgs map[string]any
@@ -851,7 +860,8 @@ func toolHandler(rt *opcore.Runtime, desc opcore.Descriptor, pins []queryPin, ex
 				return toolError(fmt.Errorf("invalid tool arguments: %w", err)), nil
 			}
 		}
-		if unknown := undeclaredArgs(schemaNames(schema), rawArgs); len(unknown) > 0 {
+		// `ignore-undeclared-arguments` leaves the drop to splitArgs below.
+		if unknown := undeclaredArgs(schemaNames(schema), rawArgs); len(unknown) > 0 && !dropUndeclared {
 			return toolError(undeclaredArgError(toolName(desc), unknown, schemaNames(schema))), nil
 		}
 		args := splitArgs(schema, rawArgs)
