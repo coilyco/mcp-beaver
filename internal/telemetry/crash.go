@@ -101,7 +101,11 @@ func RecoverHandler(next http.Handler) http.Handler {
 			}
 			// ErrAbortHandler is net/http's own deliberate abort, not a crash.
 			if err, ok := recovered.(error); !ok || !errors.Is(err, http.ErrAbortHandler) {
-				reportPanic(recovered)
+				// The request rides on the event: method, path, and headers after the
+				// SDK drops credentials. The body is never read.
+				hub := sentry.CurrentHub().Clone()
+				hub.Scope().SetRequest(r)
+				reportPanicOn(hub, recovered)
 			}
 			panic(recovered)
 		}()
@@ -109,12 +113,14 @@ func RecoverHandler(next http.Handler) http.Handler {
 	})
 }
 
-func reportPanic(recovered any) {
+func reportPanic(recovered any) { reportPanicOn(sentry.CurrentHub(), recovered) }
+
+func reportPanicOn(hub *sentry.Hub, recovered any) {
 	if !crashReportingActive() {
 		return
 	}
-	sentry.CurrentHub().Recover(recovered)
-	sentry.Flush(crashFlushTimeout)
+	hub.Recover(recovered)
+	hub.Flush(crashFlushTimeout)
 }
 
 func crashReportingActive() bool {

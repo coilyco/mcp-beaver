@@ -11,6 +11,8 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"go.opentelemetry.io/otel/trace"
+
+	internaltelemetry "forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/telemetry"
 )
 
 // maxLoggedReason bounds one refusal reason. An upstream that answers a
@@ -43,7 +45,10 @@ func newLogger(w io.Writer, level string) *slog.Logger {
 	case "error":
 		lvl = slog.LevelError
 	}
-	return slog.New(slog.NewJSONHandler(w, &slog.HandlerOptions{Level: lvl}))
+	// Each record is also a breadcrumb on the next Sentry crash, never an event.
+	return slog.New(internaltelemetry.WithCrashBreadcrumbs(
+		slog.NewJSONHandler(w, &slog.HandlerOptions{Level: lvl}),
+	))
 }
 
 // Log returns the process logger, so the command layer reports startup through

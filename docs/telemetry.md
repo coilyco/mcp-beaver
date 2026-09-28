@@ -45,6 +45,11 @@ separable in one project. A crash is a failed start, a serve loop that returns a
 panic in `main` or in a request handler. A handler panic is reported and re-raised, so net/http still
 logs it and drops the connection as before, and its own `http.ErrAbortHandler` is not a crash.
 
+**Each crash is annotated.** A handler panic carries the request: method, path, and headers after the
+SDK filters credentials, with the body never read. Every log record at info or above rides along as a
+breadcrumb, with `arguments`, content, and credential keys filtered, and never raises an event of its
+own. Release comes from the build's embedded `vcs.revision`, or `SENTRY_RELEASE` when set.
+
 Handled errors, meaning refusals, tool errors, and upstream failures, stay in SigNoz to keep inside the
 free quota. Each process sends at most `CrashEventsPerMinute` (20) a minute, and a bad DSN leaves
 reporting off with a warning that names only its type. **A panic on any other goroutine still kills the

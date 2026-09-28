@@ -3,8 +3,11 @@ package telemetry
 import (
 	"context"
 	"errors"
+	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -133,5 +136,56 @@ func TestCrashBudgetCapsEventsPerProcessMinute(t *testing.T) {
 	}
 	if !crashWithinBudget(start.Add(61 * time.Second)) {
 		t.Fatalf("budget did not recover after the window")
+	}
+}
+
+func TestHandlerPanicCarriesTheRequestWithoutCredentials(t *testing.T) {
+	transport := withCapturedCrashes(t)
+	server := httptest.NewServer(RecoverHandler(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+		panic("handler blew up")
+	})))
+	defer server.Close()
+	server.Config.ErrorLog = nil
+	req, _ := http.NewRequest(http.MethodPost, server.URL+"/mcp", strings.NewReader(`{"arguments":"MEMBER-TEXT"}`))
+	req.Header.Set("Authorization", "Bearer "+strings.Join([]string{"secret", "token"}, "-"))
+	req.Header.Set("X-Agent-Origin", "eng-platform/beetle-ox:fixture")
+	if resp, err := http.DefaultClient.Do(req); err == nil {
+		resp.Body.Close()
+	}
+	sent := transport.sent()
+	if len(sent) != 1 || sent[0].Request == nil {
+		t.Fatalf("sent %d events with request %v, want 1 carrying the request", len(sent), sent)
+	}
+	request := sent[0].Request
+	if request.Method != http.MethodPost || !strings.HasSuffix(request.URL, "/mcp") {
+		t.Fatalf("request = %s %s, want POST .../mcp", request.Method, request.URL)
+	}
+	if request.Headers["X-Agent-Origin"] != "eng-platform/beetle-ox:fixture" {
+		t.Fatalf("headers lost the caller origin: %v", request.Headers)
+	}
+	for name, value := range request.Headers {
+		if strings.Contains(value, "secret-token") {
+			t.Fatalf("the %s credential reached Sentry: %v", name, request.Headers)
+		}
+	}
+	if strings.Contains(request.Data, "MEMBER-TEXT") {
+		t.Fatalf("request body reached Sentry: %q", request.Data)
+	}
+}
+
+func TestACrashCarriesLogBreadcrumbsAndNeverRaisesOne(t *testing.T) {
+	transport := withCapturedCrashes(t)
+	logger := slog.New(WithCrashBreadcrumbs(slog.NewJSONHandler(io.Discard, nil)))
+	logger.Info("tool call served", slog.String("tool", "create_noul_decision"), slog.String("arguments", "MEMBER-TEXT"))
+	if len(transport.sent()) != 0 {
+		t.Fatalf("a log line raised an event")
+	}
+	ReportCrash(errors.New("serve: listener closed"))
+	crumbs := transport.sent()[0].Breadcrumbs
+	if len(crumbs) != 1 || crumbs[0].Message != "tool call served" {
+		t.Fatalf("breadcrumbs = %+v, want the one log record", crumbs)
+	}
+	if crumbs[0].Data["tool"] != "create_noul_decision" || crumbs[0].Data["arguments"] != "[Filtered]" {
+		t.Fatalf("breadcrumb data = %v, want tool kept and arguments filtered", crumbs[0].Data)
 	}
 }
