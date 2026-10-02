@@ -30,7 +30,9 @@ func parseSource(specPath string, src []byte) ([]opcore.Descriptor, opcore.Runti
 		return nil, opcore.RuntimeConfig{}, err
 	}
 	if !specMode {
-		return opcore.ParseInline(effective)
+		// No CLI flags are mounted here, so a body field may keep a reserved name such as query.
+		descs, cfg, _, err := opcore.ParseInlineWithOptions(effective, opcore.InlineOptions{AllowReservedNames: true})
+		return descs, cfg, err
 	}
 	gf, err := guardfile.Parse(effective)
 	if err != nil {

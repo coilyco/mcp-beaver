@@ -56,8 +56,8 @@ github.com/clipperhouse/displaywidth v0.10.0 h1:GhBG8WuerxjFQQYeuZAeVTuyxuX+Urai
 github.com/clipperhouse/displaywidth v0.10.0/go.mod h1:XqJajYsaiEwkxOj4bowCTMcT1SgvHo9flfF3jQasdbs=
 github.com/clipperhouse/uax29/v2 v2.6.0 h1:z0cDbUV+aPASdFb2/ndFnS9ts/WNXgTNNGFoKXuhpos=
 github.com/clipperhouse/uax29/v2 v2.6.0/go.mod h1:Wn1g7MK6OoeDT0vL+Q0SQLDz/KpfsVRgg6W7ihQeh4g=
-github.com/coilyco/umbra v0.242.0 h1:+NDT7KmICToTHBhWmbKttkK7jIXyjx1b5amVByvAIfc=
-github.com/coilyco/umbra v0.242.0/go.mod h1:rO3AQh6qLF0U7DLkZOCSAuVOHklDESfoCJrghC4jDvc=
+github.com/coilyco/umbra v0.247.0 h1:e+AR0sxcUvB7UzZXDqfD6k1P9xoEdPj7wUrjAINq1oQ=
+github.com/coilyco/umbra v0.247.0/go.mod h1:rO3AQh6qLF0U7DLkZOCSAuVOHklDESfoCJrghC4jDvc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

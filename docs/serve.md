@@ -7,7 +7,7 @@ binds stdio: these run as pods reached by URL.
 
 ## Spec parse
 
-`opcore.ParseInline` (umbra `http/opcore`) parses the inline grammar: `wrap`
+`opcore.ParseInlineWithOptions` (umbra `http/opcore`) parses the inline grammar: `wrap`
 header, `base-url`, `auth`, `restrict`, and each
 `can <verb> <resource> { path/query/body/set }` grant. Body blocks preserve
 typed scalars, scalar arrays, nested objects, required fields, and raw object
@@ -16,6 +16,8 @@ top-level keys without forwarding undeclared input. Query blocks preserve
 string, boolean, integer, number, and scalar-array types, numeric bounds, array
 length bounds, required fields, mutually-exclusive groups, and safe local
 aliases. Method is inferred from the verb, path params from `{template}`.
+It sets `AllowReservedNames`, since no CLI flag is mounted here, so a body field may be
+named `query` as Exa's search requires.
 `sql` grants reach Postgres only: `pgx` is the one driver this binary links.
 
 **Grant to tool projection.** Each `Descriptor` becomes one MCP tool and one HTTP endpoint named
