@@ -3,7 +3,7 @@ package mcpserver
 import (
 	"encoding/json"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
+	"github.com/coilyco/umbra/http/opcore"
 )
 
 // consumerBudgetBytes is the smallest tool-result cap observed in a consuming

@@ -8,9 +8,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/guardfile"
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/specverb"
+	"github.com/coilyco/umbra/http/guardfile"
+	"github.com/coilyco/umbra/http/opcore"
+	"github.com/coilyco/umbra/http/specverb"
 )
 
 // maxSpecBytes bounds a decompressed spec, so a crafted archive cannot exhaust

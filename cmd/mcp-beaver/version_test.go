@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/mcpserver"
+	"github.com/coilyco/mcp-beaver/internal/mcpserver"
 )
 
 func TestVersionCommandPrintsTheStampedVersion(t *testing.T) {

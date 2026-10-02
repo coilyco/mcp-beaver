@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/pkg/valuesource"
+	"github.com/coilyco/umbra/pkg/valuesource"
 )
 
 // UpstreamHeader is one request header the proxy presents to its upstream, with

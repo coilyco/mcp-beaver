@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/guardfile"
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/mcpverb"
+	"github.com/coilyco/umbra/http/guardfile"
+	"github.com/coilyco/umbra/http/mcpverb"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

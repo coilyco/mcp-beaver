@@ -8,8 +8,8 @@ import (
 
 	kdl "github.com/calico32/kdl-go"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/pkg/tokenmint"
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/pkg/valuesource"
+	"github.com/coilyco/umbra/pkg/tokenmint"
+	"github.com/coilyco/umbra/pkg/valuesource"
 )
 
 // oauth2Provider is the registry name a guardfile or a header template

@@ -3,7 +3,7 @@ package mcpserver
 import (
 	"fmt"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
+	"github.com/coilyco/umbra/http/opcore"
 )
 
 // ignoreUndeclaredConfig is the set of projected tool names whose undeclared

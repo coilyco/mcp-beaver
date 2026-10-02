@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
+	"github.com/coilyco/umbra/http/opcore"
 )
 
 // secretPaths holds the base-url path prefixes this process must never emit.

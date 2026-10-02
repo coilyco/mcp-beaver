@@ -5,7 +5,7 @@ holds it. An OAuth `client_credentials` upstream holds nothing until a token is
 fetched, so that value has to be minted. `oauth2-client` declares which clients
 exist, and `{oauth2:<name>}` or `value oauth2 "<name>"` presents the token.
 
-umbra's [`pkg/tokenmint`](https://forgejo.coilysiren.me/coilyco-flight-deck/umbra)
+umbra's [`pkg/tokenmint`](https://github.com/coilyco/umbra)
 does the minting: it posts `grant_type=client_credentials`, caches the token to
 its own `expires_in`, renews ahead of expiry, and serializes concurrent first
 calls so they do not stampede the token endpoint. This repo declares the clients

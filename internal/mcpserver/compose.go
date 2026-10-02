@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"sort"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/mcpverb"
 	kdl "github.com/calico32/kdl-go"
+	"github.com/coilyco/umbra/http/mcpverb"
 )
 
 // maxInheritDepth bounds the chain a guardfile may compose. A cycle is caught

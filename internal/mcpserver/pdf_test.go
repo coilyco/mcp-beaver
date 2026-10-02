@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
+	"github.com/coilyco/umbra/http/opcore"
 )
 
 // buildPDF writes a minimal, valid, uncompressed PDF carrying one line of text
