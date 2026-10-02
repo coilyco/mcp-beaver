@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/pkg/tokenmint"
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/pkg/valuesource"
+	"github.com/coilyco/umbra/pkg/tokenmint"
+	"github.com/coilyco/umbra/pkg/valuesource"
 )
 
 // ProviderSet is the ONE value registry a server resolves and validates

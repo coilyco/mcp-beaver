@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
+	"github.com/coilyco/umbra/http/opcore"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/mcpverb"
+	"github.com/coilyco/umbra/http/mcpverb"
 )
 
 // registryPageSize is the registry's own maximum page, so a full enumeration

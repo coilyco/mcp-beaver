@@ -6,7 +6,7 @@
 # nothing here needs a C toolchain per platform.
 set -e
 VERSION="$(git describe --tags --exact-match 2>/dev/null || git describe --tags --always)"
-STAMP="forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/mcpserver.Version=${VERSION}"
+STAMP="github.com/coilyco/mcp-beaver/internal/mcpserver.Version=${VERSION}"
 mkdir -p dist
 for target in darwin/arm64 darwin/amd64 linux/amd64 linux/arm64; do
     GOOS="${target%/*}"

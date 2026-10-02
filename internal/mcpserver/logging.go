@@ -12,7 +12,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"go.opentelemetry.io/otel/trace"
 
-	internaltelemetry "forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/telemetry"
+	internaltelemetry "github.com/coilyco/mcp-beaver/internal/telemetry"
 )
 
 // maxLoggedReason bounds one refusal reason. An upstream that answers a

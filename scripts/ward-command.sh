@@ -41,7 +41,7 @@ case "$action" in
     ;;
   pin-umbra)
     ref="${1:-v0.122.0}"
-    go get "forgejo.coilysiren.me/coilyco-flight-deck/umbra@${ref}"
+    go get "github.com/coilyco/umbra@${ref}"
     go mod tidy
     ;;
   *)

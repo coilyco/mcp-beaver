@@ -33,10 +33,10 @@ import (
 	"syscall"
 	"time"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/mcpserver"
-	internaltelemetry "forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/telemetry"
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/mcpverb"
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/pkg/tokenmint"
+	"github.com/coilyco/mcp-beaver/internal/mcpserver"
+	internaltelemetry "github.com/coilyco/mcp-beaver/internal/telemetry"
+	"github.com/coilyco/umbra/http/mcpverb"
+	"github.com/coilyco/umbra/pkg/tokenmint"
 
 	// Registers the "pgx" database/sql driver a `database pgx { ... }` guardfile
 	// names. umbra deliberately imports no driver, so the choice of which

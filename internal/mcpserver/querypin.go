@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
 	kdl "github.com/calico32/kdl-go"
+	"github.com/coilyco/umbra/http/opcore"
 )
 
 // queryPin fixes one outgoing query parameter for one spec-mode tool, resolved

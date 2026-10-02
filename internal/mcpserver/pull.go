@@ -13,7 +13,7 @@ import (
 	"sync"
 	"unicode"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/mcpverb"
+	"github.com/coilyco/umbra/http/mcpverb"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

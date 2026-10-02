@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/guardfile"
+	"github.com/coilyco/umbra/http/guardfile"
 )
 
 // flattenBanner marks the artifact as generated. A reader who opens the mounted

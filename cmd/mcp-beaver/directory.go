@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/directory"
-	"forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/mcpserver"
+	"github.com/coilyco/mcp-beaver/internal/directory"
+	"github.com/coilyco/mcp-beaver/internal/mcpserver"
 )
 
 // runDirectory sweeps the registry and writes the directory: `sweep.json`,

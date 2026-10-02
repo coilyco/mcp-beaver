@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/mcpserver"
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/mcpverb"
+	"github.com/coilyco/mcp-beaver/internal/mcpserver"
+	"github.com/coilyco/umbra/http/mcpverb"
 )
 
 // runPull writes the guardfile for one registry server: the entry's remote,

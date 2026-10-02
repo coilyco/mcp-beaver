@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/internal/directory"
+	"github.com/coilyco/mcp-beaver/internal/directory"
 )
 
 // pagedRegistry lists four servers over two pages: one that answers, one that

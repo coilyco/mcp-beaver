@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"forgejo.coilysiren.me/coilyco-flight-deck/umbra/http/opcore"
 	kdl "github.com/calico32/kdl-go"
+	"github.com/coilyco/umbra/http/opcore"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
