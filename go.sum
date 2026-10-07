@@ -58,6 +58,8 @@ github.com/clipperhouse/uax29/v2 v2.6.0 h1:z0cDbUV+aPASdFb2/ndFnS9ts/WNXgTNNGFoK
 github.com/clipperhouse/uax29/v2 v2.6.0/go.mod h1:Wn1g7MK6OoeDT0vL+Q0SQLDz/KpfsVRgg6W7ihQeh4g=
 github.com/coilyco/umbra v0.247.0 h1:e+AR0sxcUvB7UzZXDqfD6k1P9xoEdPj7wUrjAINq1oQ=
 github.com/coilyco/umbra v0.247.0/go.mod h1:rO3AQh6qLF0U7DLkZOCSAuVOHklDESfoCJrghC4jDvc=
+github.com/coilyco/umbra v0.248.0 h1:H59H0XFVnSZiDIyIKou1COie5fFt3SQTihu4EyPAgzE=
+github.com/coilyco/umbra v0.248.0/go.mod h1:rO3AQh6qLF0U7DLkZOCSAuVOHklDESfoCJrghC4jDvc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
