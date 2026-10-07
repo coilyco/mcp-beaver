@@ -1,5 +1,6 @@
 [tool.agentic-os.repo-pointer-skills]
-org = "coilyco-flight-deck"
+# Every fleet repo lives under the coilyco org.
+org = "coilyco"
 
 # The README carries the product banner, and the two lines it takes put a file
 # that already sat at 159 over the 160-line trifecta cap.

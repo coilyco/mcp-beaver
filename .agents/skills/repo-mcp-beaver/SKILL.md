@@ -5,7 +5,7 @@ description: A MCP server generator with a natural flow. Triggers - mcp-beaver, 
 
 # repo-mcp-beaver
 
-Pointer to `~/projects/coilyco-flight-deck/mcp-beaver/`.
+Pointer to `~/projects/coilyco/mcp-beaver/`.
 
 - [`README.md`](../../../README.md) - what it is, quickstart, layout.
 - [`AGENTS.md`](../../../AGENTS.md) - agent-facing operating context for the repo.
