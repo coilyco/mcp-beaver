@@ -39,3 +39,26 @@ payload at a tool that wants one field. A webhook whose extra keys sit at the to
 level, as an Alertmanager body does, needs `ignore-undeclared-arguments "<tool>"`
 (teable:coilyco/deploy#8419). It builds only on a grant whose body is a `map`, where no dropped
 key can have been a filter.
+
+# A tool the allowlist does not grant
+
+A `tools/call` for a name the server never granted comes back as a tool result
+with `isError: true` and the text `tool "<name>" is not on this server's
+allowlist. The allowlist refused the call, and nothing was sent upstream`. It
+was JSON-RPC `-32601 method not found: "tools/call"`, which tells a caller the
+protocol method is missing rather than that policy refused one tool
+(COI-2385).
+
+- **Why not -32601** - the spec's error handling lists "Unknown tool" under
+  protocol errors with `-32602`, and keeps `-32601` for a method the server does
+  not implement. `tools/call` is implemented.
+- **Why not -32602 either** - it reads as a malformed call, and no code in the
+  spec says policy refused it. The spec has clients provide tool execution
+  errors to the model (SHOULD) and protocol errors only optionally (MAY).
+- **Clients** - Codex keeps an `isError` result's content blocks and reduces a
+  JSON-RPC error to its message string. The TypeScript client throws on a
+  JSON-RPC error and returns an `isError` result. Claude Code is closed source,
+  so its handling is not read from code.
+- **Logged** - the call never reaches a tool handler, so the middleware writes
+  the WARN `tool call refused` line itself. Telemetry counts it as
+  `error.type=tool_error` where it was `method_not_found`.

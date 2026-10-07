@@ -102,6 +102,19 @@ func toolError(err error) *mcp.CallToolResult {
 	return out
 }
 
+// allowlistRefusal is what a caller gets for a tool the allowlist never granted.
+//
+// A tool-error result rather than a JSON-RPC error: the spec's Error Handling
+// section puts "Unknown tool" under protocol errors with -32602, and no code
+// there says "policy refused this", so every code reads as a broken server or a
+// malformed call. A tool-error result is the channel clients hand to the model,
+// and the one this runtime already uses for its other refusals. See
+// docs/refusals.md.
+func allowlistRefusal(tool string) *mcp.CallToolResult {
+	return toolError(fmt.Errorf(
+		"tool %q is not on this server's allowlist. The allowlist refused the call, and nothing was sent upstream", tool))
+}
+
 // schemaNames is the declared argument surface of a generated tool. The schema
 // is umbra's own projection of the operation, so it is closed by construction:
 // a name it does not carry is a name the tool does not have.

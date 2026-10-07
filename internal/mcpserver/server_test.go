@@ -511,8 +511,34 @@ func TestToolCallRestrictDenied(t *testing.T) {
 	}
 }
 
+// wantAllowlistRefusal is the wording a refused call carries. Pinned in full:
+// the message is the only thing telling a model, and the operator reading its
+// transcript, that policy refused the tool and the server is healthy.
+const wantAllowlistRefusal = `tool "delete_thing" is not on this server's allowlist. The allowlist refused the call, and nothing was sent upstream`
+
+// requireAllowlistRefusal asserts the call came back as a tool-error result,
+// never a JSON-RPC error: -32601 reads as a missing protocol method and -32602
+// as a malformed call, and neither says policy refused it.
+func requireAllowlistRefusal(t *testing.T, out rpcResponse) {
+	t.Helper()
+	if out.Error != nil {
+		t.Fatalf("an off-allowlist call must be a tool result, got JSON-RPC error %d %q", out.Error.Code, out.Error.Message)
+	}
+	var result map[string]any
+	if err := json.Unmarshal(out.Result, &result); err != nil {
+		t.Fatalf("result: %v", err)
+	}
+	if isErr, _ := result["isError"].(bool); !isErr {
+		t.Fatalf("off-allowlist call should be an isError result; got %v", result)
+	}
+	if got := firstText(t, result); got != wantAllowlistRefusal {
+		t.Errorf("refusal = %q, want %q", got, wantAllowlistRefusal)
+	}
+}
+
 // TestUnknownToolDenied proves deny-by-absence at call time: a tool the spec
-// never granted is a method-not-found, not a silent pass.
+// never granted is refused as a policy refusal, not a silent pass and not a
+// protocol error.
 func TestUnknownToolDenied(t *testing.T) {
 	s, err := New("test", "test.mcp.kdl", []byte(roundTripSpec("http://127.0.0.1:1")))
 	if err != nil {
@@ -525,12 +551,39 @@ func TestUnknownToolDenied(t *testing.T) {
 	sessionID := initResp.Header.Get("Mcp-Session-Id")
 
 	resp := postToServer(t, ts.Client(), ts.URL+"/mcp", sessionID, `{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"delete_thing","arguments":{}}}`)
-	out := decodeRPCResponse(t, resp)
-	if out.Error == nil {
-		t.Fatal("calling an ungranted tool should be a JSON-RPC error")
+	requireAllowlistRefusal(t, decodeRPCResponse(t, resp))
+}
+
+// TestUpstreamProxyOffAllowlistToolRefused is the case COI-2385 was filed from:
+// the upstream has the tool, the allowlist does not name it, and the upstream is
+// never called.
+func TestUpstreamProxyOffAllowlistToolRefused(t *testing.T) {
+	schema := `{"type":"object","properties":{}}`
+	called := false
+	handler := func(_ context.Context, _ *mcp.CallToolRequest, _ map[string]any) (*mcp.CallToolResult, any, error) {
+		called = true
+		return &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: "ran"}}}, nil, nil
 	}
-	if out.Error.Code != -32601 {
-		t.Errorf("error code = %d, want method-not-found -32601", out.Error.Code)
+	upstream := upstreamTool(t, "browse", "browse upstream", schema, handler)
+	mcp.AddTool(upstream, &mcp.Tool{Name: "delete_thing", Description: "delete upstream", InputSchema: json.RawMessage(schema)}, handler)
+	upstreamTS := newUpstreamServer(t, upstream)
+	defer upstreamTS.Close()
+
+	s, err := NewProxy(context.Background(), "proxy", "", upstreamTS.URL+"/mcp", []string{"browse"}, upstreamTS.Client())
+	if err != nil {
+		t.Fatalf("NewProxy: %v", err)
+	}
+	t.Cleanup(func() { _ = s.Close() })
+	ts := httptest.NewServer(s.Handler())
+	defer ts.Close()
+
+	initResp := postToServer(t, ts.Client(), ts.URL+"/mcp", "", `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"mcp-beaver-test","version":"0.1.0"}}}`)
+	sessionID := initResp.Header.Get("Mcp-Session-Id")
+
+	resp := postToServer(t, ts.Client(), ts.URL+"/mcp", sessionID, `{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"delete_thing","arguments":{}}}`)
+	requireAllowlistRefusal(t, decodeRPCResponse(t, resp))
+	if called {
+		t.Error("upstream tool ran despite the allowlist refusal")
 	}
 }
 

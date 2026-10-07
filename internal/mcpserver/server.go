@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"sort"
 	"strings"
@@ -710,7 +711,14 @@ func (s *Server) installMiddleware() {
 			if method == "tools/call" {
 				if jerr, ok := err.(*jsonrpc.Error); ok && jerr.Code == jsonrpc.CodeInvalidParams {
 					if strings.HasPrefix(jerr.Message, "unknown tool") {
-						return nil, &jsonrpc.Error{Code: jsonrpc.CodeMethodNotFound, Message: jerr.Message, Data: jerr.Data}
+						// The call never reaches withLogging, so this is the only
+						// server-side record of the refusal.
+						tool := toolFromRequest(req)
+						refusal := allowlistRefusal(tool)
+						logger.WarnContext(ctx, "tool call refused",
+							slog.String("tool", tool), slog.String("outcome", "tool_error"),
+							slog.String("reason", redactReason(firstTextContent(refusal))))
+						return refusal, nil
 					}
 				}
 			}
