@@ -83,6 +83,9 @@ func New(name, specPath string, src []byte) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := rejectUnknownRESTSiblings(sources); err != nil {
+		return nil, err
+	}
 	oauth2Clients, err := parseOAuth2Clients(sources)
 	if err != nil {
 		return nil, err

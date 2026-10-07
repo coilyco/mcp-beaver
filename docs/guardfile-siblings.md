@@ -64,6 +64,13 @@ Before mcp-beaver#113 none of this happened: a parent's siblings were dropped
 in silence while its grants survived, so a child came out wider than its base.
 The grant half is in [inherit.md](inherit.md).
 
+## Unknown siblings
+
+A top-level node nothing reads fails `New` (so `lint` and `serve`), naming it
+and listing the known ones. A misspelled control such as `reject-emtpy` would
+otherwise guard nothing while the file read as guarded. The check spans the
+whole `inherit` chain. `description` is allowed because umbra owns it.
+
 ## OAuth2 clients
 
 `oauth2-client "<name>" { token-url ...; client-id ...; client-secret <provider> "<address>" }`

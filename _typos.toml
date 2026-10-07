@@ -1,10 +1,14 @@
 # Test fixtures whose whole point is the spelling. Correcting them would delete
 # what the test asserts: a misspelled tool name that must be rejected, and an
-# unknown KDL child that must fail parsing.
+# unknown KDL child that must fail parsing, and misspelled sibling controls
+# (reject-emtpy, confim, descripton) that `New` must refuse (COI-2106).
 [default.extend-words]
 reprot = "reprot"
 audiance = "audiance"
 unparseable = "unparseable"
+emtpy = "emtpy"
+confim = "confim"
+descripton = "descripton"
 # ser / SER: the ser8 host (machine-kai-ser8), not a misspelling of `set`.
 ser = "ser"
 SER = "SER"
