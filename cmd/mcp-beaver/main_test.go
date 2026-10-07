@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -208,6 +210,40 @@ func TestServeHTTPShutsDownOnContextCancellation(t *testing.T) {
 	cancel()
 	if err := serveHTTP(ctx, "127.0.0.1:0", http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})); err != nil {
 		t.Fatalf("serveHTTP: %v", err)
+	}
+}
+
+// A connection outliving the shutdown timeout is warned about and cut, never
+// returned: returned, it ended the process as a crash (MCP-BEAVER-1).
+func TestShutdownHTTPDeadlineIsAWarningNotAnError(t *testing.T) {
+	var logs strings.Builder
+	mcpserver.SetLogOutput(&logs, "debug")
+	t.Cleanup(func() { mcpserver.SetLogOutput(io.Discard, "error") })
+
+	release := make(chan struct{})
+	t.Cleanup(func() { close(release) })
+	started := make(chan struct{})
+	server := &http.Server{Handler: http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+		close(started)
+		<-release
+	})}
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("listen: %v", err)
+	}
+	go func() { _ = server.Serve(listener) }()
+	go func() {
+		if resp, err := http.Get("http://" + listener.Addr().String()); err == nil {
+			_ = resp.Body.Close()
+		}
+	}()
+	<-started
+
+	if err := shutdownHTTP(server, 50*time.Millisecond); err != nil {
+		t.Fatalf("shutdownHTTP = %v, want nil so the process does not report a crash", err)
+	}
+	if out := logs.String(); !strings.Contains(out, `"level":"WARN"`) || !strings.Contains(out, "HTTP shutdown deadline reached") {
+		t.Errorf("logs = %s, want the deadline at WARN", out)
 	}
 }
 

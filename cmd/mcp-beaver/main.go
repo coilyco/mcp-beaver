@@ -678,10 +678,8 @@ func serveHTTP(ctx context.Context, addr string, handler http.Handler) error {
 		}
 		return err
 	case <-ctx.Done():
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
-		defer cancel()
-		if err := server.Shutdown(shutdownCtx); err != nil {
-			return fmt.Errorf("shutdown HTTP server: %w", err)
+		if err := shutdownHTTP(server, shutdownTimeout); err != nil {
+			return err
 		}
 		err := <-errCh
 		if errors.Is(err, http.ErrServerClosed) {
@@ -689,6 +687,25 @@ func serveHTTP(ctx context.Context, addr string, handler http.Handler) error {
 		}
 		return err
 	}
+}
+
+// shutdownHTTP drains the server for up to timeout. Connections still open at
+// the deadline are cut and warned about, never returned: a returned error ends
+// the process as a crash, and a pod roll with a request in flight hit that
+// every time (MCP-BEAVER-1).
+func shutdownHTTP(server *http.Server, timeout time.Duration) error {
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	err := server.Shutdown(shutdownCtx)
+	if errors.Is(err, context.DeadlineExceeded) {
+		mcpserver.Log().Warn("HTTP shutdown deadline reached, closing open connections", "timeout", timeout.String())
+		_ = server.Close()
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("shutdown HTTP server: %w", err)
+	}
+	return nil
 }
 
 // reorderFlagsFirst moves flag tokens (and the value of the one known

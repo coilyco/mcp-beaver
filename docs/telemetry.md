@@ -43,7 +43,9 @@ With `SENTRY_DSN` set, the serving verbs (`serve`, `serve-ssm`, `serve-s3`, `ser
 send **crashes, and only crashes**, to Sentry, tagged `server.name` so every deployed guardfile stays
 separable in one project. A crash is a failed start, a serve loop that returns an error, or an uncaught
 panic in `main` or in a request handler. A handler panic is reported and re-raised, so net/http still
-logs it and drops the connection as before, and its own `http.ErrAbortHandler` is not a crash.
+logs it and drops the connection as before, and its own `http.ErrAbortHandler` is not a crash. A
+connection still open when the five second shutdown deadline passes is cut and logged at warn, which
+is the ordinary end of a pod roll and not a crash.
 
 **Each crash is annotated.** A handler panic carries the request: method, path, and headers after the
 SDK filters credentials, with the body never read. Every log record at info or above rides along as a
