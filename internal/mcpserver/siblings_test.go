@@ -2,10 +2,11 @@ package mcpserver
 
 import (
 	"os"
+	"slices"
 	"strings"
 	"testing"
 
-	"github.com/coilyco/umbra/http/mcpverb"
+	"github.com/coilyco/umbra/http/guardfile"
 )
 
 // The reported shape (COI-2106): a misspelled control parsed as nothing and
@@ -58,25 +59,13 @@ func TestNewRefusesAnUnknownSiblingInAnInheritedBase(t *testing.T) {
 	}
 }
 
-// umbraSiblings restates a name umbra owns, so pin the claim to the pinned
-// umbra: if it stops reading `description`, this fails and the allowlist is
-// the thing to fix. The upstream shape is the fixture because umbra reads the
-// node there and on spec-mode guardfiles, and never on the inline grammar.
-func TestUmbraSiblingsAreReadByUmbra(t *testing.T) {
-	for name := range umbraSiblings {
-		if name != "description" {
-			t.Fatalf("umbraSiblings holds %q, which this test does not know how to pin", name)
+// The refusal names what umbra exports, so a sibling umbra adds is allowed and
+// listed without an edit here (COI-2429).
+func TestUmbraSiblingsAreAllowedAndNamed(t *testing.T) {
+	names := restSiblingNames()
+	for _, name := range guardfile.SiblingNodes() {
+		if !slices.Contains(names, name) {
+			t.Errorf("refusal omits umbra sibling %q", name)
 		}
-	}
-	up, err := mcpverb.ParseUpstream([]byte(`description "Docs."
-mcp-upstream "ac.tandem/docs-mcp" {
-    url "https://tandem.ac/mcp"
-    can "search_docs"
-}`))
-	if err != nil {
-		t.Fatalf("mcpverb.ParseUpstream: %v", err)
-	}
-	if up.Description != "Docs." {
-		t.Errorf("umbra read description = %q, want it consumed by umbra", up.Description)
 	}
 }
