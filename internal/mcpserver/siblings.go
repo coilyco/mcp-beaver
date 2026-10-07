@@ -2,21 +2,12 @@ package mcpserver
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
-)
 
-// umbraSiblings names the top-level nodes umbra's own parse reads beside the
-// subject node, so beaver's parsers never see them. Today that is `description`
-// alone, read on spec-mode and upstream guardfiles and ignored on the inline
-// grammar, where it is allowed all the same because it is valid on the others.
-// umbra exports no list of what it reads, so this restates the one name rather
-// than its grammar, and TestUmbraSiblingsAreReadByUmbra fails the day umbra
-// stops reading it. A node umbra gains later is not discoverable from here,
-// which is the open half of COI-2106.
-var umbraSiblings = map[string]bool{
-	"description": true,
-}
+	"github.com/coilyco/umbra/http/guardfile"
+)
 
 // restSiblings names every top-level node beside `wrap` that a REST guardfile
 // parses in this package, one entry per sibling parser. A parser added without
@@ -53,7 +44,7 @@ func rejectUnknownRESTSiblings(sources []guardSource) error {
 	}
 	for _, sn := range nodes {
 		name := sn.node.Name()
-		if restSiblings[name] || umbraSiblings[name] {
+		if restSiblings[name] || slices.Contains(guardfile.SiblingNodes(), name) {
 			continue
 		}
 		return fmt.Errorf(
@@ -64,14 +55,11 @@ func rejectUnknownRESTSiblings(sources []guardSource) error {
 	return nil
 }
 
-// restSiblingNames lists what a refusal may name, read off the maps so a node
-// added above cannot leave the message stale.
+// restSiblingNames lists what a refusal may name, read off the map and umbra's
+// export so a node added to either cannot leave the message stale.
 func restSiblingNames() []string {
-	out := make([]string, 0, len(restSiblings)+len(umbraSiblings))
+	out := guardfile.SiblingNodes()
 	for name := range restSiblings {
-		out = append(out, name)
-	}
-	for name := range umbraSiblings {
 		out = append(out, name)
 	}
 	sort.Strings(out)

@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	github.com/aws/aws-sdk-go-v2 v1.43.6
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.107.2
-	github.com/coilyco/umbra v0.248.0
+	github.com/coilyco/umbra v0.249.0
 	github.com/dslipak/pdf v0.0.2
 	github.com/getsentry/sentry-go v0.49.0
 	github.com/jackc/pgx/v5 v5.10.0
