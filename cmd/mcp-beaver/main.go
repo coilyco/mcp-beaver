@@ -636,13 +636,61 @@ func withTelemetry(ctx context.Context, serviceName string, run func() error) (e
 		return err
 	}
 	defer func() {
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
-		defer cancel()
-		if shutdownErr := runtime.Shutdown(shutdownCtx); shutdownErr != nil {
-			err = errors.Join(err, fmt.Errorf("shutdown OpenTelemetry: %w", shutdownErr))
+		if shutdownErr := shutdownTelemetry(runtime, shutdownTimeout); shutdownErr != nil {
+			err = errors.Join(err, shutdownErr)
 		}
 	}()
 	return run()
+}
+
+// telemetryRuntime is the slice of *internaltelemetry.Runtime that
+// shutdownTelemetry needs, so a test can stand in a provider that misses the
+// deadline.
+type telemetryRuntime interface {
+	Shutdown(ctx context.Context) error
+}
+
+// shutdownTelemetry flushes OpenTelemetry for up to timeout. A flush that
+// misses the deadline is warned about and dropped, never returned: a returned
+// error is reported as a crash by withTelemetry (same class as MCP-BEAVER-1).
+// Any other flush error still returns, even when it arrives joined with a
+// deadline.
+func shutdownTelemetry(runtime telemetryRuntime, timeout time.Duration) error {
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	err := runtime.Shutdown(shutdownCtx)
+	if err == nil {
+		return nil
+	}
+	var rest []error
+	deadline := false
+	for _, leaf := range joinedLeaves(err) {
+		if errors.Is(leaf, context.DeadlineExceeded) {
+			deadline = true
+			continue
+		}
+		rest = append(rest, leaf)
+	}
+	if deadline {
+		mcpserver.Log().Warn("OpenTelemetry flush deadline reached, dropping unsent telemetry", "timeout", timeout.String())
+	}
+	if len(rest) == 0 {
+		return nil
+	}
+	return fmt.Errorf("shutdown OpenTelemetry: %w", errors.Join(rest...))
+}
+
+// joinedLeaves flattens an errors.Join tree, which Runtime.Shutdown returns
+// with one entry per provider.
+func joinedLeaves(err error) []error {
+	if joined, ok := err.(interface{ Unwrap() []error }); ok {
+		var leaves []error
+		for _, e := range joined.Unwrap() {
+			leaves = append(leaves, joinedLeaves(e)...)
+		}
+		return leaves
+	}
+	return []error{err}
 }
 
 // readHeaderTimeout bounds how long a client may take to send its request

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -244,6 +245,45 @@ func TestShutdownHTTPDeadlineIsAWarningNotAnError(t *testing.T) {
 	}
 	if out := logs.String(); !strings.Contains(out, `"level":"WARN"`) || !strings.Contains(out, "HTTP shutdown deadline reached") {
 		t.Errorf("logs = %s, want the deadline at WARN", out)
+	}
+}
+
+type stubTelemetryRuntime struct{ err error }
+
+func (s stubTelemetryRuntime) Shutdown(context.Context) error { return s.err }
+
+// An OTel flush that misses the shutdown deadline is warned about and dropped:
+// returned, withTelemetry hands it to ReportCrash. Any other flush error still
+// returns, including one joined with a deadline from another provider.
+func TestShutdownTelemetryDeadlineIsAWarningNotAnError(t *testing.T) {
+	var logs strings.Builder
+	mcpserver.SetLogOutput(&logs, "debug")
+	t.Cleanup(func() { mcpserver.SetLogOutput(io.Discard, "error") })
+
+	deadline := fmt.Errorf("traces: %w", context.DeadlineExceeded)
+	if err := shutdownTelemetry(stubTelemetryRuntime{err: errors.Join(deadline, deadline)}, time.Second); err != nil {
+		t.Fatalf("shutdownTelemetry = %v, want nil so the process does not report a crash", err)
+	}
+	if out := logs.String(); !strings.Contains(out, `"level":"WARN"`) || !strings.Contains(out, "OpenTelemetry flush deadline reached") {
+		t.Errorf("logs = %s, want the deadline at WARN", out)
+	}
+
+	other := errors.New("exporter refused")
+	for name, in := range map[string]error{
+		"alone":                other,
+		"joined with deadline": errors.Join(deadline, other),
+	} {
+		err := shutdownTelemetry(stubTelemetryRuntime{err: in}, time.Second)
+		if err == nil || !errors.Is(err, other) {
+			t.Errorf("%s: shutdownTelemetry = %v, want the exporter error returned", name, err)
+		}
+		if err != nil && errors.Is(err, context.DeadlineExceeded) {
+			t.Errorf("%s: shutdownTelemetry = %v, want the deadline dropped from what is returned", name, err)
+		}
+	}
+
+	if err := shutdownTelemetry(stubTelemetryRuntime{}, time.Second); err != nil {
+		t.Errorf("clean flush = %v, want nil", err)
 	}
 }
 
