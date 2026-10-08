@@ -1,9 +1,5 @@
-# Catalog metadata for the cross-repo knowledge graph.
-#
-# Dev verbs used to live here as a `commands:` block. They are recipes in the
-# justfile now. This file survives only because check_catalog_block pins this
-# exact path and catalog-trifecta wants README, AGENTS, and FEATURES to link
-# it, both upstream in agentic-os.
+# Catalog metadata for the cross-repo knowledge graph. Dev verbs are justfile recipes.
+# The path is pinned upstream by check_catalog_block, hence the file survives.
 
 catalog:
   description: "Guarded MCP server runtime: serves a KDL guardfile as an auth-neutral MCP surface over streamable HTTP, lints guardfiles and upstream allowlists, and ships as one generic image plus a Helm chart."

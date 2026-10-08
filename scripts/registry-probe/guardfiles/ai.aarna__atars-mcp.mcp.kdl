@@ -1,7 +1,5 @@
 // ai.aarna/atars-mcp
-// Generated from the MCP registry and a live tools/list.
-// 18 tools: 0 declared read-only, 0 declared mutating,
-// 18 undeclared. Only declared read-only tools are exposed.
+// Generated: 18 tools, 0 read-only (exposed), 0 mutating, 18 undeclared.
 instructions {
     text "Crypto market signals, technical indicators, and sentiment analysis for AI agents."
 }

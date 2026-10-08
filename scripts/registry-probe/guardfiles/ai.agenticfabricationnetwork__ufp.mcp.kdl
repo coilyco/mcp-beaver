@@ -1,7 +1,5 @@
 // ai.agenticfabricationnetwork/ufp
-// Generated from the MCP registry and a live tools/list.
-// 11 tools: 0 declared read-only, 0 declared mutating,
-// 11 undeclared. Only declared read-only tools are exposed.
+// Generated: 11 tools, 0 read-only (exposed), 0 mutating, 11 undeclared.
 instructions {
     text "Turn designs into shipped parts: quote 3D printing, CNC, and decals, then check out."
 }

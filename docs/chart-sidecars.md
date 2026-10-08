@@ -27,7 +27,7 @@ keep the old `nameOverride` on the existing release.
 
 The chart renders no Ingress, identity provider, certificate, or DNS record.
 A consuming deployment brings its own exposure layer, and `deploy`'s shared
-`charts/ingress-public-authed` owns the CoilyCo fleet gate.
+`charts/ingress-public-authed` owns the coilyco fleet gate.
 
 ## Verify
 

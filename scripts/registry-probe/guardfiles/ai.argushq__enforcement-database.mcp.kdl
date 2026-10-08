@@ -1,7 +1,5 @@
 // ai.argushq/enforcement-database
-// Generated from the MCP registry and a live tools/list.
-// 5 tools: 0 declared read-only, 0 declared mutating,
-// 5 undeclared. Only declared read-only tools are exposed.
+// Generated: 5 tools, 0 read-only (exposed), 0 mutating, 5 undeclared.
 instructions {
     text "Search Argus HQ public FDA enforcement data: warning letters, recalls, approvals, 483s."
 }

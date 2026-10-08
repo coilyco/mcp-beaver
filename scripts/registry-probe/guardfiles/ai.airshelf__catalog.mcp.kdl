@@ -1,7 +1,5 @@
 // ai.airshelf/catalog
-// Generated from the MCP registry and a live tools/list.
-// 8 tools: 6 declared read-only, 2 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 8 tools, 6 read-only (exposed), 2 mutating, 0 undeclared.
 instructions {
     text "Cross-vendor B2B catalog for AI agents: search, compare, find equivalents, request a quote."
 }

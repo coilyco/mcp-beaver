@@ -1,7 +1,5 @@
 // ai.agenticterminal/directory
-// Generated from the MCP registry and a live tools/list.
-// 6 tools: 0 declared read-only, 0 declared mutating,
-// 6 undeclared. Only declared read-only tools are exposed.
+// Generated: 6 tools, 0 read-only (exposed), 0 mutating, 6 undeclared.
 instructions {
     text "Verified merchants accepting agentic payments on Lightning/L402/BOLT12/USDT — search, verify, pay."
 }

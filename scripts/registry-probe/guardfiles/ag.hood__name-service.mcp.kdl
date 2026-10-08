@@ -1,7 +1,5 @@
 // ag.hood/name-service
-// Generated from the MCP registry and a live tools/list.
-// 5 tools: 0 declared read-only, 0 declared mutating,
-// 5 undeclared. Only declared read-only tools are exposed.
+// Generated: 5 tools, 0 read-only (exposed), 0 mutating, 5 undeclared.
 instructions {
     text "Resolve .hood names on Robinhood Chain — forward/reverse, text records, availability & pricing."
 }

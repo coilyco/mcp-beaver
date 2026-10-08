@@ -1,17 +1,5 @@
-# Forgejo-canonical binary release train. Every main push validates, and a
-# revision that changes what the binary ships publishes a tagged release with
-# installable artifacts. A docs or chart commit validates and stops, so a
-# version is never minted that nobody can tell apart from the last one.
-#
-# Separate from ci.yml on purpose: that one publishes the OCI image deploy
-# consumes by source sha, which is a different artifact on a different cadence.
-# The image is how the fleet runs beaver; this is how a stranger installs it.
-#
-# The tag and release steps are agentic-os's shared composite actions, consumed
-# by ref rather than forked, the way agent-compose consumes them.
-#
-# Major versions are hand-driven: dispatch this workflow with bump: major.
-# Nothing in commit history can escalate a bump.
+# Forgejo-canonical binary release train, separate from ci.yml's image publish.
+# Tagging, the major-bump dispatch, and the hold file: docs/release.md.
 name: release
 
 on:

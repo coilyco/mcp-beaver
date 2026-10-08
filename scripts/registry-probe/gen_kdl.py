@@ -1,14 +1,9 @@
 """Emit a beaver guardfile per probed upstream.
 
-The file carries policy, never schemas. beaver's DESIGN.md: "no per-tool input
-schema, because the engine derives it". serve-upstream already snapshots the
-upstream contracts at connect time, so restating them here would duplicate a
-source of truth that drifts.
-
-Allow/withhold comes from the upstream's own annotations.readOnlyHint, never
-from the tool name. Measured on 120 tools with a declared hint, name-based
-screening caught 6 to 10 of 24 real mutators and the misses were payment tools,
-so an undeclared tool is withheld rather than guessed at.
+Policy only, never schemas: the engine derives the input schema, and
+serve-upstream snapshots the upstream contract at connect time. Allow/withhold
+comes from the upstream's own readOnlyHint, never the tool name, so an
+undeclared tool is withheld. The measurement behind that: docs/pull.md.
 """
 import json, sys, pathlib
 
@@ -42,9 +37,7 @@ def guardfile(s):
     L = []
     cov = coverage(s)
     L.append(f"// {s['name']}")
-    L.append("// Generated from the MCP registry and a live tools/list.")
-    L.append(f"// {len(tools)} tools: {len(allow)} declared read-only, {len(deny)} declared mutating,")
-    L.append(f"// {len(unknown)} undeclared. Only declared read-only tools are exposed.")
+    L.append(f"// Generated: {len(tools)} tools, {len(allow)} read-only (exposed), {len(deny)} mutating, {len(unknown)} undeclared.")
     L.append("")
     # `instructions` is a sibling node, as in every other beaver guardfile.
     if s.get("description"):

@@ -1,7 +1,5 @@
 // ac.inference.sh/mcp
-// Generated from the MCP registry and a live tools/list.
-// 25 tools: 16 declared read-only, 9 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 25 tools, 16 read-only (exposed), 9 mutating, 0 undeclared.
 instructions {
     text "run any ai model. compose agents, stack knowledge, connect tools. one api, pay per run."
 }

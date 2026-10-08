@@ -1,7 +1,5 @@
 // ai.agentrapay/agentra
-// Generated from the MCP registry and a live tools/list.
-// 6 tools: 2 declared read-only, 4 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 6 tools, 2 read-only (exposed), 4 mutating, 0 undeclared.
 instructions {
     text "Identity oracle and trust layer for autonomous AI agents. Bidirectional KYA and trust scoring."
 }

@@ -1,7 +1,5 @@
 // ac.tandem/docs-mcp
-// Generated from the MCP registry and a live tools/list.
-// 13 tools: 7 declared read-only, 0 declared mutating,
-// 6 undeclared. Only declared read-only tools are exposed.
+// Generated: 13 tools, 7 read-only (exposed), 0 mutating, 6 undeclared.
 instructions {
     text "Remote MCP server for Tandem docs, install guides, SDKs, workflows, and agent setup help."
 }

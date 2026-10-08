@@ -1,7 +1,5 @@
 // ai.ai-akari/agent-trust-receipt
-// Generated from the MCP registry and a live tools/list.
-// 2 tools: 1 declared read-only, 1 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 2 tools, 1 read-only (exposed), 1 mutating, 0 undeclared.
 instructions {
     text "Read-only Remote MCP for externally grounded AI agent trust receipts."
 }

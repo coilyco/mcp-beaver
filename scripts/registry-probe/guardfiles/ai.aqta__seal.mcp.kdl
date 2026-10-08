@@ -1,7 +1,5 @@
 // ai.aqta/seal
-// Generated from the MCP registry and a live tools/list.
-// 10 tools: 10 declared read-only, 0 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 10 tools, 10 read-only (exposed), 0 mutating, 0 undeclared.
 instructions {
     text "Verify Seal AI decision receipts: signed evidence anyone can check, no account needed."
 }

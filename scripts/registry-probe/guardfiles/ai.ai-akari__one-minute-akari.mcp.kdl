@@ -1,7 +1,5 @@
 // ai.ai-akari/one-minute-akari
-// Generated from the MCP registry and a live tools/list.
-// 4 tools: 2 declared read-only, 2 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 4 tools, 2 read-only (exposed), 2 mutating, 0 undeclared.
 instructions {
     text "A free one-minute reset for people, delivered by AI, with no account or personal data."
 }

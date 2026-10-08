@@ -1,7 +1,5 @@
 // ai.agentlookups/plumbline
-// Generated from the MCP registry and a live tools/list.
-// 1 tools: 0 declared read-only, 0 declared mutating,
-// 1 undeclared. Only declared read-only tools are exposed.
+// Generated: 1 tools, 0 read-only (exposed), 0 mutating, 1 undeclared.
 instructions {
     text "Free contractor-license checks from official state records; a no-match never proves unlicensed."
 }

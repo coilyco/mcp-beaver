@@ -1,7 +1,5 @@
 // agency.goji/goji
-// Generated from the MCP registry and a live tools/list.
-// 9 tools: 0 declared read-only, 1 declared mutating,
-// 8 undeclared. Only declared read-only tools are exposed.
+// Generated: 9 tools, 0 read-only (exposed), 1 mutating, 8 undeclared.
 instructions {
     text "Answers on AEO, SEO, web and brand from GOJI's published material. Melbourne, Australia."
 }

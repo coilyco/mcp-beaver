@@ -1,7 +1,5 @@
 // ai.agentlookups/greenlight
-// Generated from the MCP registry and a live tools/list.
-// 2 tools: 2 declared read-only, 0 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 2 tools, 2 read-only (exposed), 0 mutating, 0 undeclared.
 instructions {
     text "US plug-in solar (balcony solar) law registry with a daily UL 3700 certification watch."
 }

@@ -1,7 +1,5 @@
 // ai.adoraads/beauty
-// Generated from the MCP registry and a live tools/list.
-// 6 tools: 5 declared read-only, 1 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 6 tools, 5 read-only (exposed), 1 mutating, 0 undeclared.
 instructions {
     text "AI-native beauty ads, sponsored product discovery, and brand recommendations."
 }

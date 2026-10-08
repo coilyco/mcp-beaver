@@ -1,7 +1,5 @@
 // ai.alpic.alpix/Alpix
-// Generated from the MCP registry and a live tools/list.
-// 3 tools: 2 declared read-only, 1 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 3 tools, 2 read-only (exposed), 1 mutating, 0 undeclared.
 instructions {
     text "A pixel wars MCP server: ask your agent to collaboratively draw pixels in a huge square"
 }

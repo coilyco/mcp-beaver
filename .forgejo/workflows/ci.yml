@@ -1,28 +1,5 @@
-# CI gate for mcp-beaver: build, vet, and test the generic runtime on every push,
-# then - on a push to main or an authorized manual dispatch of main - publish
-# the one runtime image to Forgejo OCI, keyed by the full source sha. Deploy
-# consumes that exact reference. One generic image is published when the
-# runtime source changes, not per guardfile (mcp-beaver#6, mount-not-bake).
-#
-# umbra is a private forgejo module fetched anonymously, so GOPRIVATE keeps
-# it off the public proxy and sumdb (the go gate here and the Dockerfile build).
-#
-# `docker` is the only label this Forgejo instance's runners advertise, and it
-# resolves to node:20-bookworm. `ubuntu-latest` is a GitHub-mirror label the
-# Forgejo runner does not know, so a gate pinned to it matched no runner and
-# the repo queued zero tasks (mcp-beaver#10).
-#
-# The gate covers more than the Go build. A chart change and a committed example
-# guardfile both reach production without touching a Go file, and `go test`
-# cannot see either. `check-app-mount` is the one that spans the chart-to-runtime
-# seam: it renders the chart, materializes the mount as kubelet projects it, and
-# lints the result with the real runtime, because both halves of mcp-beaver#110
-# validated clean on their own while the pod failed at startup. They run through
-# `just` so a verb cannot pass on a laptop and differ here, and the image
-# carries go, helm, yq, and just already.
-#
-# A trusted main-only host runner publishes one private source-sha image and
-# verifies the remote manifest after the source gate passes.
+# Source gate on every push, plus the main-only source-sha OCI image publish.
+# Why each step exists: docs/ci.md.
 name: ci
 on:
   push:

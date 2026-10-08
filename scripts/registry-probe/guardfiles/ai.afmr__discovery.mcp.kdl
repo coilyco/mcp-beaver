@@ -1,7 +1,5 @@
 // ai.afmr/discovery
-// Generated from the MCP registry and a live tools/list.
-// 4 tools: 4 declared read-only, 0 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 4 tools, 4 read-only (exposed), 0 mutating, 0 undeclared.
 instructions {
     text "Read AFMR failure modes and discover scoped attestation and lift-evidence contracts."
 }

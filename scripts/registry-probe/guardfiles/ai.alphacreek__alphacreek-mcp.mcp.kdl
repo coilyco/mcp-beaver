@@ -1,7 +1,5 @@
 // ai.alphacreek/alphacreek-mcp
-// Generated from the MCP registry and a live tools/list.
-// 5 tools: 5 declared read-only, 0 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 5 tools, 5 read-only (exposed), 0 mutating, 0 undeclared.
 instructions {
     text "Access SEC filings efficiently (10-K, 10-Q, etc), save time and tokens, and get cited answers."
 }

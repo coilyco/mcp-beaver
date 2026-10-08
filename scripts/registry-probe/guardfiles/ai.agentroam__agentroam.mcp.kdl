@@ -1,7 +1,5 @@
 // ai.agentroam/agentroam
-// Generated from the MCP registry and a live tools/list.
-// 11 tools: 8 declared read-only, 3 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 11 tools, 8 read-only (exposed), 3 mutating, 0 undeclared.
 instructions {
     text "Buy travel eSIMs, gift cards and mobile top-ups with crypto — user confirms before any order."
 }

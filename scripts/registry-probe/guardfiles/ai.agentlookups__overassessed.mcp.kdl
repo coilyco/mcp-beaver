@@ -1,7 +1,5 @@
 // ai.agentlookups/overassessed
-// Generated from the MCP registry and a live tools/list.
-// 1 tools: 0 declared read-only, 0 declared mutating,
-// 1 undeclared. Only declared read-only tools are exposed.
+// Generated: 1 tools, 0 read-only (exposed), 0 mutating, 1 undeclared.
 instructions {
     text "Maryland property-assessment fairness checks vs similar homes, with appeal windows and links."
 }

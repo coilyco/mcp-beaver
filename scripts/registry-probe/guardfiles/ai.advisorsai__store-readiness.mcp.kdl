@@ -1,7 +1,5 @@
 // ai.advisorsai/store-readiness
-// Generated from the MCP registry and a live tools/list.
-// 1 tools: 1 declared read-only, 0 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 1 tools, 1 read-only (exposed), 0 mutating, 0 undeclared.
 instructions {
     text "Ten machine-readable signals on one public page: the top miss if any, and a receipt we re-verify."
 }

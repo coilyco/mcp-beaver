@@ -1,7 +1,5 @@
 // ai.arclan/registry
-// Generated from the MCP registry and a live tools/list.
-// 4 tools: 0 declared read-only, 0 declared mutating,
-// 4 undeclared. Only declared read-only tools are exposed.
+// Generated: 4 tools, 0 read-only (exposed), 0 mutating, 4 undeclared.
 instructions {
     text "MCP server registry — validated by live handshake, scored on reliability, monitored continuously."
 }

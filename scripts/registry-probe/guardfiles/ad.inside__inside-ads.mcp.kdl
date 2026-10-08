@@ -1,7 +1,5 @@
 // ad.inside/inside-ads
-// Generated from the MCP registry and a live tools/list.
-// 3 tools: 0 declared read-only, 0 declared mutating,
-// 3 undeclared. Only declared read-only tools are exposed.
+// Generated: 3 tools, 0 read-only (exposed), 0 mutating, 3 undeclared.
 instructions {
     text "Telegram ad exchange: estimate reach and cost with no account, then create and run campaigns."
 }

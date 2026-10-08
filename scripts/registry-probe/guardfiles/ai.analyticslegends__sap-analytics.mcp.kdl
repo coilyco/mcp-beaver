@@ -1,7 +1,5 @@
 // ai.analyticslegends/sap-analytics
-// Generated from the MCP registry and a live tools/list.
-// 20 tools: 20 declared read-only, 0 declared mutating,
-// 0 undeclared. Only declared read-only tools are exposed.
+// Generated: 20 tools, 20 read-only (exposed), 0 mutating, 0 undeclared.
 instructions {
     text "AI agent for SAP analytics: firms, day rates, contract radar, news, concepts, studies"
 }
