@@ -57,7 +57,7 @@ def guardfile(s):
         L.append("    // readOnlyHint: true, declared by the upstream")
         for t in allow:
             L.append(f"    can {kdl_str(t['name'])}")
-    # No withhold blocks, on purpose: docs/registry-pull.md says why.
+    # No withhold blocks, on purpose: docs/pull.md says why.
     if deny or unknown:
         L.append("")
         L.append(f"    // Not exposed: {len(deny)} declared mutating, {len(unknown)} undeclared.")

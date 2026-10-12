@@ -4,7 +4,7 @@
 //
 // `opcore.ParseInline` reads only the `wrap` node, so none of these touch the
 // frozen inline grammar or the umbra pin. Every one fails closed. All are
-// opt-in except `server-info`, which is on by default. See docs/DESIGN.md.
+// opt-in except `server-info`, which is on by default. See docs/guardfile-siblings.md.
 
 // What THIS server is for, published in the initialize handshake under the
 // shared policy sentence every generated server carries. That sentence says

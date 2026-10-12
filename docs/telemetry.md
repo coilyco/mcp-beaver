@@ -1,59 +1,27 @@
-# Opt-in OpenTelemetry
+# Logs, telemetry, and crash reports
 
-Application-level traces and metrics for every spec-backed, SSM, and
-upstream-proxy server. Standard `OTEL_*` variables own configuration. With no
-explicit exporter selector or OTLP endpoint, provider initialization stays a
-no-network no-op. `OTEL_SDK_DISABLED=true` and the per-signal `none` selectors
-disable export explicitly. Invalid explicit configuration fails startup, while
-asynchronous export failures never alter a tool result.
+## Structured logs
 
-- **MCP server** - one SERVER span and one `mcp.server.operation.duration`
-  measurement per request or notification. `tools/call` carries
-  `gen_ai.operation.name=execute_tool` and the bounded tool name. Tool-error
-  results set `error.type=tool_error` and ERROR status.
-- **Upstream MCP client** - `serve-upstream` emits CLIENT spans and
-  `mcp.client.operation.duration` across startup discovery, schema refresh, and
-  tool calls. W3C trace context and baggage inject into upstream
-  `params._meta`, preserving the server-to-client chain.
-- **Context boundary** - inbound `params._meta` supplies the remote MCP parent.
-  The active streamable-HTTP transport span is linked when it is distinct.
-- **Direct HTTP tools** - `POST /api/{tool-name}` receives standard HTTP server
-  telemetry and exactly one logical `execute_tool <tool-name>` child span. MCP
-  `tools/call` does not duplicate it. `/healthz` is excluded.
-- **Resource and lifecycle** - the resolved MCP server name is the default
-  `service.name`, overridable through `OTEL_SERVICE_NAME` and
-  `OTEL_RESOURCE_ATTRIBUTES`. Graceful shutdown flushes providers within five
-  seconds.
+Every server writes one JSON object per line to stderr through `log/slog`, which the node collector promotes with `level` mapped to OTel severity. Servers once logged only a banner: twelve hours across twenty-two pods gave one line while four servers failed every call.
 
-## What never crosses
+- **Startup** - mode, name, spec path, address, tool count, request timeout.
+- **Every tool call** - `tool`, `outcome`, `duration_ms`, and `trace_id` and `span_id` when a span is active. Applied at registration, so every kind of tool is covered.
+- **Refusals** - `outcome=tool_error` at WARN with the reason, and a handler failure is `handler_error` at ERROR.
+- **Level** - `MCP_BEAVER_LOG_LEVEL` (`debug`, `info`, `warn`, `error`), default info.
 
-Signal attributes stay bounded to methods, projected tools, transport, runtime
-mode, and closed-set error classes. Arguments, results, bodies, authorization
-headers, tokens, Guardfile contents, spec paths, and upstream URLs are never
-captured.
+**Redaction.** A reason keeps each URL's scheme, host, and path and drops the query as `?<redacted>`, where `pin` writes. Reasons are cut at 512. A base-url path is a third credential surface (Telegram's is `/bot<token>`, infrastructure#708), so the whole path is masked in the log and in the caller's error. A token-shaped pattern would fail silently when an upstream formats it differently.
 
-Structured logs are the one narrow exception, and only for a refusal reason:
-they keep the upstream host and path so a failure is attributable, and drop the
-query, which is where `pin` and caller input live. Startup logs name the spec
-path, which the operator supplied.
+## OpenTelemetry, opt-in
+
+Standard `OTEL_*` variables configure it. With no exporter selector or OTLP endpoint, startup is a no-network no-op, and `OTEL_SDK_DISABLED=true` or a per-signal `none` disables export. Invalid config fails startup, and export failures never change a tool result.
+
+- **MCP server** - one SERVER span and one `mcp.server.operation.duration` per request. `tools/call` carries `gen_ai.operation.name=execute_tool` and the tool name, and a tool error sets `error.type=tool_error`.
+- **Upstream client** - `serve-upstream` emits CLIENT spans and `mcp.client.operation.duration`, injecting W3C context into upstream `params._meta`.
+- **Direct HTTP** - `POST /api/{tool-name}` gets HTTP server telemetry and one `execute_tool` child span. `/healthz` is excluded.
+- **Resource** - the server name is the default `service.name`, and shutdown flushes in five seconds.
+
+**Never captured**: arguments, results, bodies, authorization headers, tokens, guardfile contents, spec paths, upstream URLs. Attributes stay bounded to methods, tools, transport, mode, and error classes. A refusal-reason log keeps the upstream host and path and drops the query.
 
 ## Crashes to Sentry
 
-With `SENTRY_DSN` set, the serving verbs (`serve`, `serve-ssm`, `serve-s3`, `serve-upstream`) also
-send **crashes, and only crashes**, to Sentry, tagged `server.name` so every deployed guardfile stays
-separable in one project. A crash is a failed start, a serve loop that returns an error, or an uncaught
-panic in `main` or in a request handler. A handler panic is reported and re-raised, so net/http still
-logs it and drops the connection as before, and its own `http.ErrAbortHandler` is not a crash. A
-connection still open when the five second shutdown deadline passes is cut and logged at warn, which
-is the ordinary end of a pod roll and not a crash.
-
-**Each crash is annotated.** A handler panic carries the request: method, path, and headers after the
-SDK filters credentials, with the body never read. Every log record at info or above rides along as a
-breadcrumb, with `arguments`, content, and credential keys filtered, and never raises an event of its
-own. Release comes from the build's embedded `vcs.revision`, or `SENTRY_RELEASE` when set.
-
-Handled errors, meaning refusals, tool errors, and upstream failures, stay in SigNoz to keep inside the
-free quota. Each process sends at most `CrashEventsPerMinute` (20) a minute, and a bad DSN leaves
-reporting off with a warning that names only its type. **A panic on any other goroutine still kills the
-process unreported**, because Go lets only that goroutine recover it. The CLI verbs (`lint`, `pull`,
-`directory`, `flatten`) never report.
+With `SENTRY_DSN` set, `serve`, `serve-ssm`, `serve-s3`, and `serve-upstream` send **crashes only**, tagged `server.name`: a failed start, a serve loop error, or an uncaught panic in `main` or a handler (re-raised after reporting, `http.ErrAbortHandler` excluded). A handler panic carries method, path, and credential-filtered headers, never the body, plus filtered info-and-above logs as breadcrumbs. Handled errors stay in SigNoz, at most 20 events a minute are sent, and a bad DSN leaves reporting off. A panic on another goroutine kills the process unreported, and CLI verbs never report.

@@ -71,7 +71,7 @@ curl -s -H 'Content-Type: application/json' \
 - **`serve-ssm`** is the AWS SDK-backed exact-parameter reader. The policy names
   one parameter, the general getter answers for that name alone before AWS sees
   a request, and IAM bounds the principal independently. Two bounds rather than
-  one. See [docs/ssm.md](docs/ssm.md).
+  one. See [docs/s3.md](docs/s3.md).
 - **`serve-s3`** is the asset publisher and the first write-capable mode. Its
   policy fixes one bucket, the media types it will serve, the public base URL,
   and an optional key prefix. See [docs/s3.md](docs/s3.md).
@@ -85,7 +85,7 @@ every tier below it, so a weaker surface is structural rather than asserted.
 [docs/inherit.md](docs/inherit.md).
 
 `lint` and `lint-upstream` are the same paths minus the listener, for validating
-a guardfile in CI. See [docs/lint.md](docs/lint.md).
+a guardfile in CI. See [docs/serve.md](docs/serve.md).
 
 ## Results lead with coverage
 
@@ -95,7 +95,7 @@ consuming harness bounds a tool result by keeping the front and discarding the
 tail, so a caveat serialized last is the first thing destroyed, and the model
 then reads rows with no caveat and answers as though the view were complete.
 Coverage names every array in the payload and its length, because a count in
-meaning is what changes an answer. See [docs/DESIGN.md](docs/DESIGN.md).
+meaning is what changes an answer. See [docs/serve.md](docs/serve.md).
 
 An `oauth2-client` node declares a `client_credentials` client, and
 `value oauth2 "<name>"` presents a token this runtime **mints** rather than
@@ -166,7 +166,6 @@ MIT. See [LICENSE](LICENSE).
 ## See also
 
 - [AGENTS.md](AGENTS.md) - agent operating rules for this repository.
-- [docs/FEATURES.md](docs/FEATURES.md) - what ships today.
-- [docs/DESIGN.md](docs/DESIGN.md) - why it is shaped this way.
+- [docs/FEATURES.md](docs/FEATURES.md) - what ships today, and why it is shaped this way.
 - [justfile](justfile) - dev verbs.
 - [.ward/ward.yaml](.ward/ward.yaml) - catalog metadata only.

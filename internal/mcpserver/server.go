@@ -900,7 +900,7 @@ func toolHandler(rt *opcore.Runtime, desc opcore.Descriptor, pins []queryPin, ex
 }
 
 // toolName projects a descriptor onto its MCP tool name: `verb_resource`, e.g.
-// `create_issue`. Leaf is the verb, Group the resource. See DESIGN.md.
+// `create_issue`. Leaf is the verb, Group the resource. See docs/FEATURES.md.
 func toolName(d opcore.Descriptor) string {
 	return d.Leaf + "_" + d.Group
 }

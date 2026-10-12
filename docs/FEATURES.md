@@ -1,60 +1,37 @@
 # Features
 
-What mcp-beaver ships today. It turns an umbra Guardfile into a guarded MCP
-server with a matching HTTP tool API, distributed as one runtime image plus a
-generic Helm chart.
+mcp-beaver turns an umbra Guardfile (`.mcp.kdl`) into a guarded MCP server with a matching HTTP tool API, shipped as one generic runtime image and one Helm chart. Every `can` grant becomes one MCP tool and one `POST /api/{tool-name}` endpoint, with no per-server Go, Dockerfile, handler, or input schema. Tracking: coilysiren/inbox#164, coilyco-bridge/deploy#40.
+
+## Design
+**The spec configures the image interior**: which upstream API, how it authenticates, which grants become tools. Exposure (Deployment, Service, ingress, tailnet route, mounted Secret) is the chart's job and `deploy` rolls it out. The spec never reaches into a chart, and the chart mounts the `.mcp.kdl` as an opaque blob it never parses.
+
+**Network HTTP, never stdio.** Servers are always-on pods reached by URL, so the one listener is HTTP and there is no transport fork.
+
+**Built on umbra.** `wrap ward mcp <name>` is umbra's inline grammar, not a dependency on ward. umbra supplies the compiled policy IR and the KDL authoring layer (parsed, never evaluated), and the official MCP Go SDK supplies transport and sessions. One engine with no upstream knowledge drives every spec.
 
 ## Commands
-
-- [serve.md](serve.md) - the generic runtime, grant-to-tool projection.
-- [lint.md](lint.md) - offline validation, and `lint-upstream`.
-- [spec-mode.md](spec-mode.md) - swagger-resolved grants.
-- [inherit.md](inherit.md) - tiers that compose the sibling nodes as well as the
-  grants, and `flatten`.
-- [upstream.md](upstream.md) - the guarded passthrough proxy, as flags or as a
-  `mcp-upstream` guardfile the chart mounts, the credential it presents
-  upstream, and the `withhold` stubs it states.
-- [pull.md](pull.md) - `pull`, an `mcp-upstream` guardfile written from a
-  registry entry and the upstream's own `readOnlyHint`.
-- `version` - the release this binary was built from, stamped at build time and
-  advertised in every MCP handshake. See [release.md](release.md).
-- [directory.md](directory.md) - `directory`, the registry swept into a
-  guardfile per server, a sweep record, and the two pages that index them.
-- [oauth2.md](oauth2.md) - `oauth2-client`, the one credential this runtime
-  mints rather than reads.
-- [ssm.md](ssm.md) - the exact-parameter AWS reader.
-- [s3.md](s3.md) - the asset publisher, and the one write-capable mode.
+- [serve.md](serve.md) - `serve`, the grant-to-tool projection, and `lint`.
+- [spec-mode.md](spec-mode.md) - grants resolved against an API document.
+- [inherit.md](inherit.md) - tiers, composed siblings, `flatten`.
+- [upstream.md](upstream.md) - the guarded passthrough proxy and `lint-upstream`.
+- [upstream-controls.md](upstream-controls.md) - proxy sibling nodes and argument pins.
+- [pull.md](pull.md) - `pull` and the registry-probe prototype.
+- [directory.md](directory.md) - `directory`, the registry swept into guardfiles.
+- [oauth2.md](oauth2.md) - `oauth2-client`, the credential this runtime mints.
+- [s3.md](s3.md) - `serve-s3` and `serve-ssm`.
+- [release.md](release.md) - the binary, `version`, and the Homebrew formula.
 
 ## Guardfile surface
+- [guardfile-siblings.md](guardfile-siblings.md) - instructions, resources, prompts, server-info.
+- [guardfile-controls.md](guardfile-controls.md) - pins, rate limit, cache, headers, withhold, confirm, extraction.
+- [apps.md](apps.md) - MCP App widgets.
 
-- [guardfile-siblings.md](guardfile-siblings.md) - instructions, resources,
-  prompts, server-info.
-- [apps.md](apps.md) - MCP App widgets: a `ui://` resource plus the
-  `_meta.ui.resourceUri` link a host renders from.
-- [guardfile-controls.md](guardfile-controls.md) - pins, rate limit, cache,
-  forwarded headers, withheld verbs, confirmations.
-- [extraction.md](extraction.md) - reading a PDF or feed an upstream returns.
-- [upstream-pins.md](upstream-pins.md) - server-side argument pinning.
-- [upstream-controls.md](upstream-controls.md) - the sibling nodes a proxy
-  guardfile projects, and which stay REST-only.
-
-## Runtime
-
-- [transports.md](transports.md) - streamable HTTP, the HTTP tool API, health.
-- [conformance.md](conformance.md) - MCP 2026-07-28.
-- [request-bounds.md](request-bounds.md) - deadlines and connection guards.
-- [refusals.md](refusals.md) - an undeclared argument is refused, and a
-  credential in a base-url path is never emitted.
-- [conformance.md](conformance.md) - `/admin` describe and reload.
-- [logs.md](logs.md) - structured logs and redaction.
-- [telemetry.md](telemetry.md) - opt-in OpenTelemetry, and crashes to Sentry.
-
-**Distribution.** - [release.md](release.md) is the installable binary and its
-  Homebrew formula. [image.md](image.md), [ci.md](ci.md), [chart.md](chart.md),
-  and [chart-values.md](chart-values.md) are the image the fleet deploys.
-- [DESIGN.md](DESIGN.md) - why it is shaped this way.
+## Runtime and distribution
+- [conformance.md](conformance.md) - transports, MCP 2026-07-28, `/admin`, request bounds.
+- [refusals.md](refusals.md) - undeclared arguments and unlisted tools.
+- [telemetry.md](telemetry.md) - logs, OpenTelemetry, Sentry crashes.
+- [ci.md](ci.md) - the gate, the image, the publish.
+- [chart.md](chart.md), [chart-values.md](chart-values.md) - the Helm chart.
 
 ## See also
-
-- [README.md](../README.md), [AGENTS.md](../AGENTS.md),
-  [.ward/ward.yaml](../.ward/ward.yaml).
+[README.md](../README.md) and [AGENTS.md](../AGENTS.md).

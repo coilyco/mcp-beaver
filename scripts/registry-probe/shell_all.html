@@ -107,7 +107,7 @@
     <div class="sec-head"><h2>What this run does not settle</h2></div>
     <div class="note">
       <p><strong>The grammar landed.</strong> <code>mcp-upstream</code> and <code>annotation-coverage</code> are parsed by umbra and served by <code>serve-upstream &lt;spec&gt;</code>. It was proposed when this page was written and spelled <code>wrap mcp upstream</code> then. The flag form still runs, unchanged: <code>serve-upstream --upstream &lt;url&gt; --tool &lt;name&gt;</code>.</p>
-      <p><strong>No schemas here, deliberately.</strong> beaver's DESIGN.md says there is no per-tool input schema because the engine derives it. <code>serve-upstream</code> already snapshots the upstream contracts at connect time and fails closed on drift, so restating them would duplicate a source of truth that rots.</p>
+      <p><strong>No schemas here, deliberately.</strong> beaver's docs/FEATURES.md says there is no per-tool input schema because the engine derives it. <code>serve-upstream</code> already snapshots the upstream contracts at connect time and fails closed on drift, so restating them would duplicate a source of truth that rots.</p>
       <p><strong>readOnlyHint is self-declared.</strong> An upstream that mislabels is trusted here. Nothing in this pipeline calls a tool to find out, and nothing should.</p>
       <p><strong>One reading, one day.</strong> Surfaces move. A real directory needs the run on a schedule and a history, which is also what would let it show drift rather than a snapshot.</p>
     </div>

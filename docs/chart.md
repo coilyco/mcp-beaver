@@ -1,61 +1,28 @@
 # The mcp-beaver Helm chart
 
-The auth-neutral distribution vehicle. One chart, one runtime image, many
-releases. It mounts a `.mcp.kdl` guardfile or wraps an existing
-streamable-HTTP MCP with an exact tool allowlist, so adding an MCP runtime
-becomes a values file plus `helm upgrade`.
+The auth-neutral distribution vehicle: one chart, one runtime image, many releases. It mounts a `.mcp.kdl` guardfile or wraps an existing streamable-HTTP MCP with an exact tool allowlist, so adding an MCP runtime is a values file plus `helm upgrade`.
 
 ```sh
-helm upgrade --install skillsmp mcp-beaver \
-  -f skillsmp.values.yaml \
-  --set-file spec=skillsmp.mcp.kdl \
-  --set image.tag=<built-runtime-sha>
+helm upgrade --install skillsmp mcp-beaver -f skillsmp.values.yaml \
+  --set-file spec=skillsmp.mcp.kdl --set image.tag=<built-runtime-sha>
 ```
 
-The chart stays generic and spec-opaque: it takes the `.mcp.kdl` as an opaque
-blob and never parses it, so the interior-only scope of the spec is preserved.
-The spec never reaches down into a chart, and the chart never reaches up into
-the spec. `deploy` composes this runtime contract with its fleet-specific
-exposure charts and owns rollout.
+The chart is spec-opaque: it never parses the `.mcp.kdl`, and the spec never reaches into the chart. `deploy` composes this contract with its exposure charts and owns rollout. Values: [chart-values.md](chart-values.md).
 
 ## What it templates
 
-- `configmap-spec.yaml` renders wherever a `spec` is mounted, putting the
-  `.mcp.kdl` at `/spec/<name>.mcp.kdl` beside any `widgets` an `app`-bearing
-  guardfile reads. The volume enumerates what it projects, so a ConfigMap key
-  added without a matching item stays unmounted. See [apps.md](apps.md).
-- `deployment.yaml` renders the runtime in spec or upstream mode, injects
-  application tokens when requested, and appends optional co-located
-  containers.
-- `service.yaml` renders a ClusterIP, or a NodePort when `service.nodePort` is
-  set.
-- `externalsecret.yaml` pulls each SSM-path `secret` entry into the environment
-  variable named by the guardfile.
+- `configmap-spec.yaml` wherever a `spec` is mounted, putting the `.mcp.kdl` at `/spec/<name>.mcp.kdl` beside any `widgets` ([apps.md](apps.md)). The volume lists what it projects, so a key without a matching item stays unmounted.
+- `deployment.yaml` renders the runtime in spec or upstream mode, injects application tokens when asked, and appends optional co-located containers.
+- `service.yaml` renders a ClusterIP, or a NodePort when `service.nodePort` is set.
+- `externalsecret.yaml` pulls each SSM-path `secret` entry into the environment variable the guardfile names.
 
 ## Upstream mode, as values or as a guardfile
 
-A passthrough proxy reaches the pod two ways, and `runtime.mode: upstream`
-carries both. Set the `upstream` block and the chart renders `serve-upstream`
-with `--upstream`, `--tool`, `--upstream-header`, and `--oauth2-client`. Set
-`spec` to an `mcp-upstream` guardfile instead and the chart mounts it exactly as
-spec mode mounts one, then runs `serve-upstream /spec/<specName>.mcp.kdl`. The
-file names the endpoint, the allowlist, the credential, and the server, so the
-chart refuses `upstream.url`, `.name`, `.tools`, `.headers`, and
-`.oauth2Clients` beside it, the way `serve-upstream` refuses a file beside
-`--upstream`. `upstream.connectTimeout` is the one key that still applies.
+`runtime.mode: upstream` carries both ways to reach a passthrough proxy. Set the `upstream` block and the chart renders `serve-upstream` with `--upstream`, `--tool`, `--upstream-header`, and `--oauth2-client`. Set `spec` to an `mcp-upstream` guardfile instead and it mounts as in spec mode and runs `serve-upstream /spec/<specName>.mcp.kdl`. The file names the endpoint, allowlist, credential, and server, so the chart refuses `upstream.url`, `.name`, `.tools`, `.headers`, and `.oauth2Clients` beside it, and `upstream.connectTimeout` still applies. `just helm-template-upstream-spec` renders it from `examples/` ([upstream.md](upstream.md)).
 
-```sh
-helm upgrade --install tandem-docs mcp-beaver \
-  -f registry-upstream.values.yaml \
-  --set-file spec=registry-upstream.mcp.kdl \
-  --set image.tag=<built-runtime-sha>
-```
+## Sidecars, upgrades, exposure
 
-`just helm-template-upstream-spec` renders that shape from the committed pair
-in `examples/`. See [upstream.md](upstream.md).
-
-It renders no Ingress, authentication proxy, identity-provider integration,
-certificate, DNS record, or RFC 9728 metadata endpoint. The consuming
-deployment owns those.
-
-See also: [chart-values.md](chart-values.md), [transports.md](transports.md).
+- **`extraContainers`** works in both modes: the chart appends it with no mode condition, and only the runtime args, the `/spec` mount, and the volumes are mode-conditional. **Upstream mode** wraps a sidecar that already speaks MCP, which `serve-upstream` snapshots and proxies. **Spec mode** wraps a sidecar speaking plain HTTP JSON, with `base-url` at `127.0.0.1` since containers share a network namespace. That serves a bundled dataset with no third-party limits or uptime.
+- **Upgrading a release installed as `ward-mcp`** cannot be in place if `nameOverride` changes, because the Deployment's `spec.selector` is immutable. Reinstall, or keep the old `nameOverride`.
+- **Exposure is the consumer's.** The chart renders no Ingress, auth proxy, identity provider, certificate, DNS record, or RFC 9728 metadata endpoint. `deploy`'s shared `charts/ingress-public-authed` owns the fleet gate.
+- **Verify** with `helm lint chart/` and `helm template` offline in both modes, then `GET /healthz` and one `tools/list` live.

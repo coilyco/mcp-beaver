@@ -362,7 +362,7 @@ func (p *proxyBackend) ensureFresh(ctx context.Context, name string) error {
 // probeTools lists the upstream surface over the session the backend already
 // holds. It used to dial a second session per call, which real Node MCP
 // upstreams reject at `notifications/initialized` with HTTP 400 - see
-// docs/DESIGN.md for why a co-located digest-pinned sidecar cannot drift
+// docs/chart.md for why a co-located digest-pinned sidecar cannot drift
 // underneath the long-lived session anyway.
 func (p *proxyBackend) probeTools(ctx context.Context, session *mcp.ClientSession) (*mcp.ListToolsResult, error) {
 	ctx, cancel := upstreamContext(ctx)

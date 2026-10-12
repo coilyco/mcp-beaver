@@ -32,7 +32,7 @@ The Go runtime lives at `cmd/mcp-beaver` and `internal/`, the generic Helm
 chart at `chart/`, and the guardfile examples under `examples/`. `docs/` holds
 the design and feature pages the README points at.
 `scripts/registry-probe/` is the Python prototype behind #119, described in
-[docs/registry-pull.md](docs/registry-pull.md), and ships in nothing.
+[docs/pull.md](docs/pull.md), and ships in nothing.
 
 ## Brand assets
 

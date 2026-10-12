@@ -64,7 +64,7 @@ var urlQuery = regexp.MustCompile(`(https?://[^\s?]*)\?[^\s]*`)
 //
 // Query and header were once the only two surfaces a credential could reach.
 // A base-url carrying a token in its path is the third, so the registered
-// prefix goes too. See docs/logs.md.
+// prefix goes too. See docs/telemetry.md.
 func redactReason(reason string) string {
 	reason = urlQuery.ReplaceAllString(reason, "$1?<redacted>")
 	reason = redactSecretPaths(reason)

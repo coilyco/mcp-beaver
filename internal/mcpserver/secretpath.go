@@ -11,7 +11,7 @@ import (
 
 // secretPaths holds the base-url path prefixes this process must never emit.
 // Package scope beside the process logger, because the two redactors it feeds
-// are package functions. See docs/logs.md.
+// are package functions. See docs/telemetry.md.
 var secretPaths struct {
 	mu       sync.RWMutex
 	prefixes []string

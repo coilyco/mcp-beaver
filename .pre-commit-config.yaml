@@ -1,7 +1,7 @@
 repos:
   # BEGIN managed by agentic-os/scripts/apply-agentic-os-hooks.py
   - repo: https://forgejo.coilysiren.me/coilyco/agentic-os
-    rev: aos-precommit-v0.115.0
+    rev: aos-precommit-v0.120.0
     hooks:
       - id: catalog-trifecta
       - id: documentation-placement
