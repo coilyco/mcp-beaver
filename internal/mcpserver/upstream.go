@@ -78,7 +78,7 @@ type proxyBackend struct {
 	allowlist  []string
 	baseline   map[string]string
 	selected   []*mcp.Tool
-	driftErr   error
+	driftErr   map[string]error // latched per tool, so one drift fails only that tool (COI-2900)
 	closed     bool
 }
 
@@ -97,6 +97,7 @@ func newProxyBackend(ctx context.Context, upstreamURL string, allowTools []strin
 		telemetry:  telemetry,
 		allowlist:  allowlist,
 		baseline:   map[string]string{},
+		driftErr:   map[string]error{},
 	}
 	session, err := p.dial(ctx)
 	if err != nil {
@@ -262,7 +263,7 @@ func (p *proxyBackend) declaredArgs(name string) (map[string]bool, bool) {
 // transport failure, and reconnecting would only ask the same question twice.
 func (p *proxyBackend) ensureFreshOrReconnect(ctx context.Context, name string) error {
 	err := p.ensureFresh(ctx, name)
-	if err == nil || p.hasDrifted() {
+	if err == nil || p.hasDrifted(name) {
 		return err
 	}
 	if rerr := p.reconnect(ctx); rerr != nil {
@@ -271,10 +272,10 @@ func (p *proxyBackend) ensureFreshOrReconnect(ctx context.Context, name string) 
 	return p.ensureFresh(ctx, name)
 }
 
-func (p *proxyBackend) hasDrifted() bool {
+func (p *proxyBackend) hasDrifted(name string) bool {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	return p.driftErr != nil
+	return p.driftErr[name] != nil
 }
 
 // currentSession resolves the long-lived upstream session for a caller that
@@ -326,8 +327,8 @@ func (p *proxyBackend) snapshot(ctx context.Context) error {
 func (p *proxyBackend) ensureFresh(ctx context.Context, name string) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	if p.driftErr != nil {
-		return p.driftErr
+	if err := p.driftErr[name]; err != nil {
+		return err
 	}
 	session, err := p.sessionLocked()
 	if err != nil {
@@ -350,8 +351,8 @@ func (p *proxyBackend) ensureFresh(ctx context.Context, name string) error {
 		return fmt.Errorf("mcp-beaver: tool %q is not allowlisted", name)
 	}
 	if fp != want {
-		p.driftErr = fmt.Errorf("mcp-beaver: upstream schema drift for tool %q", name)
-		return p.driftErr
+		p.driftErr[name] = fmt.Errorf("mcp-beaver: upstream schema drift for tool %q", name)
+		return p.driftErr[name]
 	}
 	if !slices.Contains(p.allowlist, name) {
 		return fmt.Errorf("mcp-beaver: tool %q is not allowlisted", name)

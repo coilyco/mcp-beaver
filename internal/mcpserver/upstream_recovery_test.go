@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -152,5 +153,62 @@ func TestUpstreamProxyDoesNotReconnectPastSchemaDrift(t *testing.T) {
 	}
 	if got := handshakes.Load(); got != before {
 		t.Errorf("drift triggered %d reconnect(s); it must not", got-before)
+	}
+}
+
+// One drifted tool must not take its unchanged neighbours down with it, and a
+// refusal names the tool that drifted. The latch used to be one error for the
+// whole backend, so every allowlisted tool answered with the first drift's name.
+func TestUpstreamProxySchemaDriftIsPerTool(t *testing.T) {
+	text := func(s string) func(context.Context, *mcp.CallToolRequest, map[string]any) (*mcp.CallToolResult, any, error) {
+		return func(context.Context, *mcp.CallToolRequest, map[string]any) (*mcp.CallToolResult, any, error) {
+			return &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: s}}}, nil, nil
+		}
+	}
+	upstream := upstreamTool(t, "browse", "browse upstream", `{"type":"object","properties":{"q":{"type":"string"}}}`, text("browse:ok"))
+	mcp.AddTool(upstream, &mcp.Tool{
+		Name:        "lookup",
+		Description: "lookup upstream",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"string"}}}`),
+	}, text("lookup:ok"))
+	upstreamTS := newUpstreamServer(t, upstream)
+	defer upstreamTS.Close()
+
+	s, err := NewProxy(context.Background(), "proxy", "", upstreamTS.URL+"/mcp", []string{"browse", "lookup"}, upstreamTS.Client())
+	if err != nil {
+		t.Fatalf("NewProxy: %v", err)
+	}
+	t.Cleanup(func() { _ = s.Close() })
+	ts := httptest.NewServer(s.Handler())
+	defer ts.Close()
+
+	initResp := postToServer(t, ts.Client(), ts.URL+"/mcp", "", `{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"mcp-beaver-test","version":"0.1.0"}}}`)
+	sessionID := initResp.Header.Get("Mcp-Session-Id")
+
+	upstream.RemoveTools("lookup")
+	mcp.AddTool(upstream, &mcp.Tool{
+		Name:        "lookup",
+		Description: "lookup upstream",
+		InputSchema: json.RawMessage(`{"type":"object","properties":{"id":{"type":"integer"}}}`),
+	}, text("lookup:v2"))
+
+	call := func(id int, tool string) (bool, string) {
+		body := `{"jsonrpc":"2.0","id":` + strconv.Itoa(id) + `,"method":"tools/call","params":{"name":"` + tool + `","arguments":{}}}`
+		var result map[string]any
+		if err := json.Unmarshal(decodeRPCResponse(t, postToServer(t, ts.Client(), ts.URL+"/mcp", sessionID, body)).Result, &result); err != nil {
+			t.Fatalf("%s result: %v", tool, err)
+		}
+		isErr, _ := result["isError"].(bool)
+		return isErr, firstText(t, result)
+	}
+
+	if isErr, got := call(2, "lookup"); !isErr || !strings.Contains(got, `schema drift for tool "lookup"`) {
+		t.Fatalf("drifted tool = (%v, %q), want a refusal naming lookup", isErr, got)
+	}
+	if isErr, got := call(3, "browse"); isErr || got != "browse:ok" {
+		t.Fatalf("unchanged tool = (%v, %q), want it served after its neighbour drifted", isErr, got)
+	}
+	if isErr, got := call(4, "lookup"); !isErr || !strings.Contains(got, `schema drift for tool "lookup"`) {
+		t.Fatalf("drifted tool, second call = (%v, %q), want it latched", isErr, got)
 	}
 }

@@ -13,20 +13,15 @@ import (
 
 // Crash reporting sends crashes, and only crashes, to Sentry beside SigNoz:
 // a failed start, a serve loop that returns an error, and an uncaught panic.
-// Handled errors stay in SigNoz to keep inside the free quota. Scope and
-// limits: docs/telemetry.md.
+// Handled errors stay in SigNoz, where they are already recorded. No
+// per-process event cap: Sentry drops past quota on the Team plan and does not
+// bill (COI-2901). Scope: docs/telemetry.md.
 
-const (
-	// CrashEventsPerMinute caps each process so a crash loop cannot spend the
-	// shared monthly quota.
-	CrashEventsPerMinute = 20
-	crashFlushTimeout    = 2 * time.Second
-)
+const crashFlushTimeout = 2 * time.Second
 
 var (
 	crashMu     sync.Mutex
 	crashActive bool
-	crashWindow []time.Time
 )
 
 // StartCrashReporting turns reporting on when SENTRY_DSN is set, tagging every
@@ -52,13 +47,7 @@ func startCrashReporting(dsn, serverName string, transport sentry.Transport) (bo
 		Dsn:           dsn,
 		Environment:   environment,
 		EnableTracing: false,
-		BeforeSend: func(event *sentry.Event, _ *sentry.EventHint) *sentry.Event {
-			if !crashWithinBudget(time.Now()) {
-				return nil
-			}
-			return event
-		},
-		Transport: transport,
+		Transport:     transport,
 	}); err != nil {
 		return false, err
 	}
@@ -127,22 +116,4 @@ func crashReportingActive() bool {
 	crashMu.Lock()
 	defer crashMu.Unlock()
 	return crashActive
-}
-
-func crashWithinBudget(now time.Time) bool {
-	crashMu.Lock()
-	defer crashMu.Unlock()
-	cutoff := now.Add(-time.Minute)
-	kept := crashWindow[:0]
-	for _, at := range crashWindow {
-		if at.After(cutoff) {
-			kept = append(kept, at)
-		}
-	}
-	crashWindow = kept
-	if len(crashWindow) >= CrashEventsPerMinute {
-		return false
-	}
-	crashWindow = append(crashWindow, now)
-	return true
 }

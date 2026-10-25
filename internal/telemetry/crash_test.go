@@ -45,9 +45,6 @@ func withCapturedCrashes(t *testing.T) *captureTransport {
 	}
 	t.Cleanup(func() {
 		_, _ = startCrashReporting("", "", nil)
-		crashMu.Lock()
-		crashWindow = nil
-		crashMu.Unlock()
 	})
 	return transport
 }
@@ -119,23 +116,6 @@ func TestRecoverHandlerIgnoresADeliberateAbort(t *testing.T) {
 	}
 	if len(transport.sent()) != 0 {
 		t.Fatalf("sent %d events for http.ErrAbortHandler, want 0", len(transport.sent()))
-	}
-}
-
-func TestCrashBudgetCapsEventsPerProcessMinute(t *testing.T) {
-	withCapturedCrashes(t)
-	start := time.Unix(1000, 0)
-	allowed := 0
-	for range CrashEventsPerMinute + 1 {
-		if crashWithinBudget(start) {
-			allowed++
-		}
-	}
-	if allowed != CrashEventsPerMinute {
-		t.Fatalf("allowed %d in one minute, want %d", allowed, CrashEventsPerMinute)
-	}
-	if !crashWithinBudget(start.Add(61 * time.Second)) {
-		t.Fatalf("budget did not recover after the window")
 	}
 }
 
