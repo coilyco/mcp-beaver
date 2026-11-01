@@ -65,8 +65,8 @@ tracked files and logs.
 
 ## Cross-repo contracts
 
-umbra provides the guarded-CLI engine this builds on, consumed as a private
-Forgejo module. Deploy consumes the published image by full source sha and owns
+umbra provides the guarded-CLI engine this builds on, consumed as a public
+GitHub module. Deploy consumes the published image by full source sha and owns
 rollout. The catalog pre-commit hooks are authored in agentic-os and consumed
 here by upstream rev, never forked.
 
@@ -98,8 +98,8 @@ actor in every action sentence.
 
 ## Release
 
-Push validated work to canonical Forgejo `main`. CI publishes an immutable
-source-SHA image. `deploy` consumes that exact reference.
+Push validated work to canonical GitHub `main`. CI publishes an immutable
+source-SHA image to `ghcr.io/coilyco/mcp-beaver`. `deploy` consumes that exact reference.
 
 ## Checkout residency
 

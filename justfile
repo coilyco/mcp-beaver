@@ -39,7 +39,7 @@ fmt *ARGS:
 image-build *ARGS:
     @docker build -t mcp-beaver:local . "$@"
 
-# Validate the trusted Forgejo OCI publisher shell contract.
+# Validate the trusted GHCR publisher shell contract.
 check-publish *ARGS:
     @bash -n scripts/publish-image.sh "$@"
 

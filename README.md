@@ -33,7 +33,7 @@ One runtime, many guardfiles.
 ## Install
 
 ```sh
-curl -fsSL -o mcp-beaver https://forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver/releases/latest/download/mcp-beaver-darwin-arm64
+curl -fsSL -o mcp-beaver https://github.com/coilyco/mcp-beaver/releases/latest/download/mcp-beaver-darwin-arm64
 chmod +x mcp-beaver && ./mcp-beaver version
 ```
 
@@ -145,8 +145,8 @@ ingress, authentication, TLS, DNS, and rollout. See
 [docs/chart.md](docs/chart.md).
 
 Every push to canonical `main` publishes the runtime as
-`forgejo.coilysiren.me/coilyco-flight-deck/mcp-beaver:<full-source-sha>`, and
-the trusted publisher verifies the remote manifest.
+`ghcr.io/coilyco/mcp-beaver:<full-source-sha>`, and the publisher verifies the
+remote manifest.
 
 ## Naming
 

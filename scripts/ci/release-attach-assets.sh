@@ -1,18 +1,12 @@
 #!/bin/sh
-# Attach every built artifact to the created Forgejo release.
+# Attach every built artifact to the created GitHub release. The upload is idempotent
+# with --clobber, so a retry of a half-attached release finishes the job.
 set -eu
-for asset in \
+gh release upload "${TAG}" --clobber \
   dist/mcp-beaver-darwin-arm64 \
   dist/mcp-beaver-darwin-amd64 \
   dist/mcp-beaver-linux-amd64 \
   dist/mcp-beaver-linux-arm64 \
   dist/SHA256SUMS \
   dist/mcp-beaver.rb
-do
-  name=$(basename "$asset")
-  curl -fsSL -X POST \
-    -H "Authorization: token ${FORGEJO_TOKEN}" \
-    -F "attachment=@${asset}" \
-    "${FORGEJO_API}/releases/${RELEASE_ID}/assets?name=${name}"
-  echo "uploaded ${name}"
-done
+echo "attached the artifacts to ${TAG}"
