@@ -2,7 +2,6 @@
 set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel)"
-export GOPRIVATE=forgejo.coilysiren.me
 
 action="${1:-}"
 shift || true

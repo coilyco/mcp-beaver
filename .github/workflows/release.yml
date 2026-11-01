@@ -1,5 +1,5 @@
-# Forgejo-canonical binary release train, separate from ci.yml's image publish.
-# Tagging, the major-bump dispatch, and the hold file: docs/release.md.
+# Binary release train, separate from ci.yml's image publish. Tagging, the major-bump
+# dispatch, and the hold file: docs/release.md.
 name: release
 
 on:
@@ -23,23 +23,26 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   release:
-    runs-on: docker
+    runs-on: ubuntu-latest
     timeout-minutes: 30
-    container:
-      image: forgejo.coilysiren.me/coilyco-flight-deck/agentic-os:release
-    env:
-      GOPRIVATE: forgejo.coilysiren.me
-    outputs:
-      publish: ${{ steps.impact.outputs.publish }}
-      tag: ${{ steps.tag.outputs.new_tag }}
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - uses: coilyco/agentic-os/actions/setup-ci@0dc318a369ff34254a7187b5b1b85ff9b6580750
+        with:
+          tools: just
 
       - name: Validate the release commit
         run: just test
@@ -52,10 +55,20 @@ jobs:
           RELEASE_HEAD: ${{ github.sha }}
         run: sh scripts/ci/release-impact.sh
 
+      - id: app
+        name: Mint a coilyco-ops App token for the tag, release and tap
+        if: ${{ steps.impact.outputs.publish == 'true' }}
+        uses: coilyco/agentic-os/actions/app-token@0dc318a369ff34254a7187b5b1b85ff9b6580750
+        with:
+          app_id: ${{ secrets.COILYCO_OPS_APP_ID }}
+          private_key_base64: ${{ secrets.COILYCO_OPS_APP_PRIVATE_KEY_BASE64 }}
+          repositories: mcp-beaver,homebrew-tap
+
       - id: tag
         if: ${{ steps.impact.outputs.publish == 'true' }}
-        uses: coilyco-flight-deck/agentic-os/actions/tag-bump@main
+        uses: coilyco/agentic-os/actions/tag-bump@0dc318a369ff34254a7187b5b1b85ff9b6580750
         with:
+          token: ${{ steps.app.outputs.token }}
           bump: ${{ github.event.inputs.bump || 'minor' }}
           tag_name: ${{ github.event.inputs.tag || '' }}
           create_tag: true
@@ -71,8 +84,9 @@ jobs:
 
       - id: create
         if: ${{ steps.impact.outputs.publish == 'true' }}
-        uses: coilyco-flight-deck/agentic-os/actions/create-release@main
+        uses: coilyco/agentic-os/actions/create-release@0dc318a369ff34254a7187b5b1b85ff9b6580750
         with:
+          token: ${{ steps.app.outputs.token }}
           tag: ${{ steps.tag.outputs.new_tag }}
           name: mcp-beaver ${{ steps.tag.outputs.new_tag }}
           body: ${{ steps.tag.outputs.changelog }}
@@ -80,15 +94,14 @@ jobs:
       - name: Attach release artifacts
         if: ${{ steps.impact.outputs.publish == 'true' }}
         env:
-          FORGEJO_TOKEN: ${{ github.token }}
-          RELEASE_ID: ${{ steps.create.outputs.release_id }}
-          FORGEJO_API: https://forgejo.coilysiren.me/api/v1/repos/${{ github.repository }}
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          TAG: ${{ steps.tag.outputs.new_tag }}
         run: sh scripts/ci/release-attach-assets.sh
 
       - name: Update the Homebrew tap
         if: ${{ steps.impact.outputs.publish == 'true' }}
         env:
-          TAP_WRITE_TOKEN: ${{ secrets.TAP_WRITE_TOKEN }}
+          TAP_TOKEN: ${{ steps.app.outputs.token }}
           TAG: ${{ steps.tag.outputs.new_tag }}
         run: sh scripts/ci/release-publish-tap.sh
 
@@ -97,4 +110,5 @@ jobs:
         continue-on-error: true
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_CI_DSN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: python3 scripts/alert_sentry.py

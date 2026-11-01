@@ -8,11 +8,9 @@
 #     -v $PWD/examples/skillsmp.mcp.kdl:/spec/skillsmp.mcp.kdl \
 #     mcp-beaver serve /spec/skillsmp.mcp.kdl --http :8080
 #
-# umbra is a private forgejo module, fetched anonymously; GOPRIVATE keeps it
-# off the public proxy/sumdb. The build is a CI consequence of a landed commit,
+# umbra is a public GitHub module. The build is a CI consequence of a landed commit,
 # per docs/FEATURES.md - it holds no registry creds.
 FROM golang:1.25 AS build
-ENV GOPRIVATE=forgejo.coilysiren.me
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
