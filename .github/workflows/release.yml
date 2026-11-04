@@ -40,7 +40,7 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - uses: coilyco/agentic-os/actions/setup-ci@0dc318a369ff34254a7187b5b1b85ff9b6580750
+      - uses: coilyco/.github/actions/setup-ci@b975f9dbb2a7c7dd7315f4b53dd3212c9b1e2685
         with:
           tools: just
 
@@ -58,7 +58,7 @@ jobs:
       - id: app
         name: Mint a coilyco-ops App token for the tag, release and tap
         if: ${{ steps.impact.outputs.publish == 'true' }}
-        uses: coilyco/agentic-os/actions/app-token@0dc318a369ff34254a7187b5b1b85ff9b6580750
+        uses: coilyco/.github/actions/app-token@b975f9dbb2a7c7dd7315f4b53dd3212c9b1e2685
         with:
           app_id: ${{ secrets.COILYCO_OPS_APP_ID }}
           private_key_base64: ${{ secrets.COILYCO_OPS_APP_PRIVATE_KEY_BASE64 }}
@@ -66,7 +66,7 @@ jobs:
 
       - id: tag
         if: ${{ steps.impact.outputs.publish == 'true' }}
-        uses: coilyco/agentic-os/actions/tag-bump@0dc318a369ff34254a7187b5b1b85ff9b6580750
+        uses: coilyco/.github/actions/tag-bump@b975f9dbb2a7c7dd7315f4b53dd3212c9b1e2685
         with:
           token: ${{ steps.app.outputs.token }}
           bump: ${{ github.event.inputs.bump || 'minor' }}
@@ -84,7 +84,7 @@ jobs:
 
       - id: create
         if: ${{ steps.impact.outputs.publish == 'true' }}
-        uses: coilyco/agentic-os/actions/create-release@0dc318a369ff34254a7187b5b1b85ff9b6580750
+        uses: coilyco/.github/actions/create-release@b975f9dbb2a7c7dd7315f4b53dd3212c9b1e2685
         with:
           token: ${{ steps.app.outputs.token }}
           tag: ${{ steps.tag.outputs.new_tag }}

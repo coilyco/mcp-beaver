@@ -24,7 +24,7 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - uses: coilyco/agentic-os/actions/setup-ci@0dc318a369ff34254a7187b5b1b85ff9b6580750
+      - uses: coilyco/.github/actions/setup-ci@b975f9dbb2a7c7dd7315f4b53dd3212c9b1e2685
         with:
           tools: just yq
 
