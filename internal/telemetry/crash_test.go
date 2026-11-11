@@ -189,3 +189,33 @@ func TestACrashCarriesLogBreadcrumbsAndNeverRaisesOne(t *testing.T) {
 		t.Fatalf("breadcrumb data = %v, want tool kept and arguments filtered", crumbs[0].Data)
 	}
 }
+
+func TestDriftEventsAreErrorLevelAlertsForBothOutcomes(t *testing.T) {
+	transport := withCapturedCrashes(t)
+
+	ReportDrift("find_organizations", true, "added optional arguments: \"cursor\"")
+	ReportDrift("find_organizations", false, "argument \"q\" changed or was removed")
+
+	events := transport.sent()
+	if len(events) != 2 {
+		t.Fatalf("events = %d, want 2", len(events))
+	}
+	for i, outcome := range []string{"admitted", "refused"} {
+		event := events[i]
+		if event.Level != sentry.LevelError || event.Tags["alert"] != "true" ||
+			event.Tags["drift.tool"] != "find_organizations" || event.Tags["drift.outcome"] != outcome {
+			t.Fatalf("event %d = level %v tags %v, want an error alert tagged %s", i, event.Level, event.Tags, outcome)
+		}
+		if !strings.Contains(event.Message, outcome) || event.Tags["server.name"] != "jev-mcp" {
+			t.Fatalf("event %d message %q tags %v", i, event.Message, event.Tags)
+		}
+	}
+}
+
+func TestDriftReportsNothingWithoutADSN(t *testing.T) {
+	transport := &captureTransport{}
+	ReportDrift("x", false, "y")
+	if len(transport.sent()) != 0 {
+		t.Fatal("an event was sent with reporting off")
+	}
+}

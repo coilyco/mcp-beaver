@@ -149,17 +149,19 @@ func crashWithinBudget(now time.Time) bool {
 
 // ReportDrift sends one event when an upstream tool's schema changed, so a person
 // hears of it. It is the one handled error sent beside crashes, capped by the same
-// per-minute budget, and tagged alert=true like the fleet's other alerts.
+// per-minute budget, and tagged alert=true. Both outcomes go at error level, because
+// the project's alert workflow fires only on high priority issues and Sentry rates
+// a warning medium (measured 2026-11-11, COI-3608).
 func ReportDrift(tool string, admitted bool, detail string) {
 	if !crashReportingActive() {
 		return
 	}
-	level, outcome := sentry.LevelError, "refused"
+	outcome := "refused"
 	if admitted {
-		level, outcome = sentry.LevelWarning, "admitted"
+		outcome = "admitted"
 	}
 	sentry.WithScope(func(scope *sentry.Scope) {
-		scope.SetLevel(level)
+		scope.SetLevel(sentry.LevelError)
 		scope.SetTag("alert", "true")
 		scope.SetTag("drift.tool", tool)
 		scope.SetTag("drift.outcome", outcome)

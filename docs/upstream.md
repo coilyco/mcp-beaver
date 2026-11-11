@@ -4,7 +4,7 @@
 
 - **Projection** - each allowlisted tool becomes one MCP tool and one HTTP endpoint, keeping its contract.
 - **Fail closed** - an unknown tool is a tool error, never a widened surface.
-- **Drift** - each call, and an idle proxy every 10 minutes, compares a tool with its accepted contract. A `readOnlyHint` tool that only gains optional arguments is accepted and re-advertised. Any other change refuses that tool alone, by name, until the upstream matches again. Either sends one Sentry event with `alert=true` (`upstream_drift.go`, COI-3608).
+- **Drift** - each call, and an idle proxy every 10 minutes, compares a tool with its accepted contract. A `readOnlyHint` tool that only gains optional arguments is accepted and re-advertised. Any other change refuses that tool alone, by name, until the upstream matches again. Either sends one error-level `alert=true` Sentry event (COI-3608).
 - **One session** - calls and the drift check share one, because real Node upstreams reject a second. Its standalone stream stays open (#80), and a caller's protocol version never crosses to it (#85).
 - **Survival** - the bound is time-to-first-byte, never `Client.Timeout`, which killed the session. A lost session is replaced next call, and `--connect-timeout` retries the first connect.
 - **Credentials** - `--upstream-header 'Authorization=Bearer {env:TOKEN}'` presents a header per request. It needs one `{provider:address}` span, since a literal would put the value in argv, and never lands in an error. Minted: [oauth2.md](oauth2.md).
