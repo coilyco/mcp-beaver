@@ -78,7 +78,10 @@ type proxyBackend struct {
 	allowlist  []string
 	baseline   map[string]string
 	selected   []*mcp.Tool
-	driftErr   error
+	refused    map[string]error
+	reported   map[string]string
+	onAdmit    func(*mcp.Tool)
+	stopLoop   context.CancelFunc
 	closed     bool
 }
 
@@ -97,6 +100,8 @@ func newProxyBackend(ctx context.Context, upstreamURL string, allowTools []strin
 		telemetry:  telemetry,
 		allowlist:  allowlist,
 		baseline:   map[string]string{},
+		refused:    map[string]error{},
+		reported:   map[string]string{},
 	}
 	session, err := p.dial(ctx)
 	if err != nil {
@@ -107,7 +112,17 @@ func newProxyBackend(ctx context.Context, upstreamURL string, allowTools []strin
 		_ = session.Close()
 		return nil, err
 	}
+	loopCtx, stop := context.WithCancel(context.Background())
+	p.stopLoop = stop
+	go p.refreshLoop(loopCtx, schemaRefreshInterval)
 	return p, nil
+}
+
+// setOnAdmit names what runs when the re-admit rule accepts a changed tool.
+func (p *proxyBackend) setOnAdmit(fn func(*mcp.Tool)) {
+	p.mu.Lock()
+	p.onAdmit = fn
+	p.mu.Unlock()
 }
 
 // upstreamContext detaches a caller's request values from the upstream call,
@@ -152,9 +167,8 @@ func (p *proxyBackend) dial(ctx context.Context) (*mcp.ClientSession, error) {
 // one gets a live session - which is the difference between one bad minute and
 // the 24-hour outage in #79.
 //
-// The baseline is NOT re-snapshotted. Re-reading it would adopt whatever the
-// upstream serves now as the reviewed contract, which is exactly the drift the
-// check exists to catch.
+// The baseline is NOT re-snapshotted here. Only the re-admit rule in
+// upstream_drift.go moves it, never a reconnect.
 func (p *proxyBackend) reconnect(ctx context.Context) error {
 	p.mu.Lock()
 	if p.closed {
@@ -187,6 +201,9 @@ func (p *proxyBackend) Close() error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.closed = true
+	if p.stopLoop != nil {
+		p.stopLoop()
+	}
 	if p.session == nil {
 		return nil
 	}
@@ -255,26 +272,19 @@ func (p *proxyBackend) declaredArgs(name string) (map[string]bool, bool) {
 // ensureFreshOrReconnect runs the drift check, replacing the session once if it
 // has gone away underneath.
 //
-// The retry is safe because the drift check is a `tools/list` - idempotent, and
-// compared against the baseline captured at startup rather than a fresh one, so
-// a reconnect cannot launder a changed upstream into an accepted contract.
-// Schema drift is never retried: it is a decision about the upstream, not a
-// transport failure, and reconnecting would only ask the same question twice.
+// The retry is safe because the drift check is a `tools/list`, compared against
+// the accepted contract rather than a fresh one, so a reconnect cannot launder a
+// changed upstream into it. Drift is never retried: it is a decision about the
+// upstream, not a transport failure.
 func (p *proxyBackend) ensureFreshOrReconnect(ctx context.Context, name string) error {
 	err := p.ensureFresh(ctx, name)
-	if err == nil || p.hasDrifted() {
+	if err == nil || isSchemaDrift(err) {
 		return err
 	}
 	if rerr := p.reconnect(ctx); rerr != nil {
 		return fmt.Errorf("%w (reconnect also failed: %v)", err, rerr)
 	}
 	return p.ensureFresh(ctx, name)
-}
-
-func (p *proxyBackend) hasDrifted() bool {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	return p.driftErr != nil
 }
 
 // currentSession resolves the long-lived upstream session for a caller that
@@ -325,38 +335,24 @@ func (p *proxyBackend) snapshot(ctx context.Context) error {
 
 func (p *proxyBackend) ensureFresh(ctx context.Context, name string) error {
 	p.mu.Lock()
-	defer p.mu.Unlock()
-	if p.driftErr != nil {
-		return p.driftErr
-	}
 	session, err := p.sessionLocked()
 	if err != nil {
+		p.mu.Unlock()
 		return err
 	}
 	res, err := p.probeTools(ctx, session)
 	if err != nil {
+		p.mu.Unlock()
 		return fmt.Errorf("refresh upstream tools: %w", err)
 	}
-	tool, err := findUpstreamTool(res.Tools, name)
-	if err != nil {
-		return err
-	}
-	fp, err := fingerprintTool(tool)
-	if err != nil {
-		return fmt.Errorf("fingerprint upstream tool %q: %w", name, err)
-	}
-	want, ok := p.baseline[name]
-	if !ok {
-		return fmt.Errorf("mcp-beaver: tool %q is not allowlisted", name)
-	}
-	if fp != want {
-		p.driftErr = fmt.Errorf("mcp-beaver: upstream schema drift for tool %q", name)
-		return p.driftErr
-	}
 	if !slices.Contains(p.allowlist, name) {
+		p.mu.Unlock()
 		return fmt.Errorf("mcp-beaver: tool %q is not allowlisted", name)
 	}
-	return nil
+	out, err := p.reconcileLocked(res.Tools, name)
+	p.mu.Unlock()
+	p.announce(out)
+	return err
 }
 
 // probeTools lists the upstream surface over the session the backend already

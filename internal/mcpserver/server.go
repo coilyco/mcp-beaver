@@ -464,6 +464,7 @@ func NewProxyWithOptions(ctx context.Context, name, specPath, upstreamURL string
 		handler = withArgPins(pinned[tool.Name], opts.Providers, handler)
 		s.registerTool(t, handler)
 	}
+	proxy.setOnAdmit(func(tool *mcp.Tool) { s.sdk.AddTool(cloneTool(tool), s.handlers[tool.Name]) })
 	// After the proxied tools, and outside the bucket: the info tool reaches
 	// no upstream, so charging it would throttle a liveness probe on behalf of
 	// a service it never calls.
